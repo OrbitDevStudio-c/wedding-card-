@@ -25,6 +25,17 @@
   transform: translate3d(0, calc(var(--hero-scroll) * 0.3px), 0);
 }
 
+/* Phones: the mandala is wider than the screen, and Safari aligns an overflowing grid item to the
+   start edge, which pushed it to the right on iPhones. Centre it explicitly instead. */
+@media (max-width: 767px) {
+  .hero__mandala-wrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, calc(-50% + var(--hero-scroll) * 0.3px), 0);
+  }
+}
+
 .hero__mandala {
   width: 100%;
   opacity: 0.22;

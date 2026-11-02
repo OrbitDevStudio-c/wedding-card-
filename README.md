@@ -8,6 +8,68 @@ travel information, an RSVP form and a closing blessing.
 Everything about the couple lives in one file, [`src/config.js`](src/config.js), so the site can be
 reused for another wedding by editing that file and swapping photos and music.
 
+Crafted by [OrbitDevStudio](https://orbit-dev-studio.vercel.app/).
+
+---
+
+## Highlights
+
+- **Cinematic opening:** guests tap a gold wax seal, and two carved palace doors swing open in 3D to reveal the invitation.
+- **Scratch-to-reveal date:** a gold-foil scratch card the guest rubs away with a finger or mouse to discover the wedding dates, with a burst of falling petals.
+- **Live countdown** to the first ceremony, ticking every second, with one-tap **Add to Google Calendar** and an **Apple / Outlook `.ics`** file holding every event.
+- **Personalised invites:** send each guest their own link (`?guest=Priya`), and the site greets them by name and pre-fills their RSVP.
+- **Complete RSVP flow:** attendance, party size, which celebrations, and a note to the couple. It validates, then sends to Formspree or Google Sheets.
+- **Indian royal design language:** jharokha arches, a marigold toran, mandalas, a lotus divider and a line-art lake palace, in emerald, ivory and antique gold.
+- **Background music** that fades in when the doors open and pauses when the guest switches apps.
+- **WhatsApp sharing** with a rich link preview (title, date and image).
+- **Responsive and accessible:** tested from 320 px phones to 1920 px desktops, WCAG 2.1 AA checked with axe-core, and reduced-motion support.
+- **Fast:** under 70 KB of JavaScript (gzip), AVIF/WebP photos, self-hosted fonts, and lazy-loaded gallery and music.
+
+---
+
+## Sections, from top to bottom
+
+| # | Section | What the guest sees and can do |
+|---|---|---|
+| 1 | **Intro: palace doors** | Two emerald doors with gold rosettes and studded panels, sealed by a gold wax seal stamped with the couple's monogram. "Tap the seal to open": the seal cracks, the doors swing open in 3D and the music begins. Shows "Dear {guest}," on personalised links. |
+| 2 | **Hero invitation** | The couple's names in calligraphy inside a tall jharokha arch, under a hanging marigold toran, with a slowly turning mandala behind (soft parallax on scroll). Monogram with a gold shimmer, "Together with their families", both sets of parents, the dates and the city. A gentle "Our story" scroll cue. |
+| 3 | **Our Story** | A vertical timeline (How we met → The proposal → Forever) with arch-framed photos. A gold thread draws itself down the timeline as it scrolls into view; on desktop the chapters alternate left and right. |
+| 4 | **Save the Date: scratch card** | An arch-shaped card covered in textured gold foil. The guest scratches it away by touch or mouse; once about 45% is cleared, the dates appear with a petal burst. A "Reveal the date" button is provided for keyboard and screen-reader users. |
+| 5 | **Countdown** | Days / hours / minutes / seconds in arch tiles, with a rolling animation on each tick, counting down to the first ceremony in IST, correct in any time zone. "Add to your calendar" buttons for Google Calendar and `.ics` (all five ceremonies). |
+| 6 | **The Venue** | A line-art illustration of a lakeside palace (domes, arches, boat, birds, sun) that draws itself stroke by stroke, next to the venue name, address, dates and a **View location** button that opens Google Maps. |
+| 7 | **The Celebrations** | Events grouped by day (Mehendi, Haldi, Sangeet, Wedding Pheras, Reception). Each arch-topped card shows an icon, time, place, a short description and a **dress code with colour swatches**, so guests know what to wear. |
+| 8 | **Moments: gallery** | A masonry photo grid; every third frame has an arch crown. Tapping a photo opens a full-screen **lightbox** with caption, "2 / 6" counter, next/previous buttons, **swipe on phones**, arrow keys and Escape. |
+| 9 | **Travel & Stay** | Cards for arriving **by air, rail and road**, a shuttle note, **partner hotels** with distance and a map pin for each, and a **"Good to know" FAQ** accordion (accommodation, weather, children, plus-ones, gifts). |
+| 10 | **RSVP: "Will You Join Us?"** | Name and phone (validated), **Joyfully accept / Regretfully decline** cards, a **guest stepper** (1–6), celebration chips with **Select all**, and an optional note with a character counter. Clear inline errors, a sending spinner, then a **thank-you screen** with an animated check mark and petals. The response is remembered on the device, with **Edit my response**. |
+| 11 | **Blessings: Thank You** | An arch card over a mandala with a quote, a thank-you message, the couple's signature and their wedding hashtag. |
+| 12 | **Footer** | The monogram and the "Crafted with ❤️ in India by OrbitDevStudio" credit. |
+
+**Always available**, floating at the bottom right once the doors open:
+- **Music** on/off, with a small dancing equaliser while it plays
+- **Share on WhatsApp**
+- **Back to top** (on phones it appears when the guest scrolls up)
+
+**Ambient touches:** soft marigold and rose petals drift down the page. On desktop, the cursor leaves a trail of petals. All motion switches off for guests who prefer reduced motion.
+
+---
+
+## Built with
+
+| Area | Technology |
+|---|---|
+| UI | [React 18](https://react.dev) with function components and hooks |
+| Build tool | [Vite 5](https://vitejs.dev) |
+| Styling | Plain CSS with design tokens (CSS custom properties), no CSS framework |
+| Fonts | Pinyon Script, Cormorant Garamond and Cinzel, self-hosted and subset (`woff2`) |
+| Graphics | Inline SVG (monogram, palace, icons, motifs) and HTML Canvas (scratch card, petals) |
+| Images | [sharp](https://sharp.pixelplumbing.com) pipeline producing AVIF / WebP / JPEG at three widths |
+| Audio | HTML audio with a Web Audio gain node for smooth fades (iOS-safe) |
+| Forms | Formspree or Google Apps Script (Google Sheets); demo mode with neither |
+| Testing | [Playwright](https://playwright.dev), [axe-core](https://github.com/dequelabs/axe-core) for accessibility, Lighthouse for performance |
+| Hosting | Any static host: Vercel, Netlify and others |
+
+Runtime dependencies are only `react` and `react-dom`. Everything else is a build-time or test-time tool.
+
 ---
 
 ## Quick start
@@ -172,7 +234,18 @@ The Playwright suite (`tests/`) runs every spec at 360, 390, 768, 1024 and 1440 
 - FAQ expand and collapse; RSVP validation, loading, success and persistence
 
 Full-page screenshots for each viewport are written to `screenshots/`. `npm run lighthouse` writes
-`lighthouse/report.html`.
+`lighthouse/report.html`. Both folders are git-ignored.
+
+### Responsive audit
+
+With `npm run preview` running, `npm run audit:responsive -- <label>` drives the site at eight
+device sizes (320×568 up to 1920×1080). At each size it:
+- opens the seal and scrolls the whole page
+- checks for overflow, touch targets under 44 px, text under 12 px, overlapping text and image sizing
+- uses the scratch card, FAQ, lightbox and the full RSVP flow
+- saves screenshots to `screenshots/responsive/<label>/`
+
+See [`RESPONSIVE-AUDIT.md`](RESPONSIVE-AUDIT.md) for the latest results.
 
 ---
 
@@ -189,7 +262,7 @@ src/
   styles/                design tokens (colours, type & 8px spacing scales) and base styles
 public/                  fonts (subset woff2), photos, music, share image, favicon
 photos-src/              original photos; run `npm run images` after changing them
-scripts/                 image pipeline, OG image, music synthesis, Lighthouse runner
+scripts/                 image pipeline, OG image, music synthesis, Lighthouse runner, responsive audit
 tests/                   Playwright specs
 ```
 
