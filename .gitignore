@@ -1,7 +1,5 @@
 node_modules
 dist
-.env
-.env.local
 test-results
 playwright-report
 screenshots
@@ -14,3 +12,4 @@ promo-reel
 LOCAL-SECURITY-AUDIT.md
 GITHUB-SECURITY-AUDIT.md
 FINAL-PROJECT-REPORT.md
+config.bat
