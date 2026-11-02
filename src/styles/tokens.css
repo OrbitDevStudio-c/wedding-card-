@@ -1,0 +1,103 @@
+@font-face {
+  font-family: 'Pinyon Script';
+  src: url('/fonts/pinyon-script-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('/fonts/cormorant-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('/fonts/cormorant-400-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('/fonts/cormorant-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cinzel';
+  src: url('/fonts/cinzel-500.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+:root {
+  /* Palette: palace emerald, ivory parchment, antique gold */
+  --emerald-950: #061b18;
+  --emerald-900: #0b2b27;
+  --emerald-800: #0f3b35;
+  --emerald-700: #165047;
+  --emerald-600: #1e6458;
+  --ivory-50: #fdfaf3;
+  --ivory-100: #f7f0e1;
+  --ivory-200: #ece0c6;
+  --gold-200: #ecdcb6;
+  --gold-300: #e2c995;
+  --gold-400: #cfae72;
+  --gold-500: #b8955a;
+  --gold-700: #7a5c2b;
+  --ink: #1b2926;
+  --ink-soft: #46544f;
+  --marigold: #e39b2d;
+  --rose: #c46f6a;
+  --error: #a3352b;
+
+  --font-script: 'Pinyon Script', 'Snell Roundhand', 'Apple Chancery', cursive;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-label: 'Cinzel', Georgia, serif;
+
+  /* 8px spacing scale */
+  --space-half: 0.25rem;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 2.5rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --space-10: 5rem;
+  --space-12: 6rem;
+  --space-16: 8rem;
+
+  /* Type scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1.1875rem;
+  --text-md: 1.3125rem;
+  --text-lg: 1.625rem;
+  --text-xl: 2rem;
+  --text-2xl: clamp(2.75rem, 2.1rem + 3vw, 4rem);
+  --text-3xl: clamp(3.75rem, 2.4rem + 7vw, 7rem);
+
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-arch: 999px 999px var(--radius-md) var(--radius-md);
+
+  --shadow-soft: 0 1px 2px rgb(11 43 39 / 0.06), 0 12px 32px -12px rgb(11 43 39 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(11 43 39 / 0.08), 0 24px 48px -16px rgb(11 43 39 / 0.28);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 200ms;
+  --duration-base: 600ms;
+  --duration-slow: 1200ms;
+
+  --container: 72rem;
+  --gutter: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: var(--space-5);
+    --text-base: 1.25rem;
+  }
+}

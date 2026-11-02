@@ -1,0 +1,373 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  background: var(--emerald-950);
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--ivory-50);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  font-variant-numeric: lining-nums;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.is-locked {
+  overflow: hidden;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Laid out section by section behind the doors but not painted, so load stays light and
+   opening them needs no layout */
+.site:not(.is-open) {
+  visibility: hidden;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+img,
+svg,
+canvas,
+picture {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-500);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.tone-dark :focus-visible {
+  outline-color: var(--gold-300);
+}
+
+::selection {
+  background: var(--gold-300);
+  color: var(--emerald-950);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.container--narrow {
+  max-width: 44rem;
+}
+
+/* Sections & tonal bands */
+.section {
+  position: relative;
+  padding-block: var(--space-12);
+  scroll-margin-top: var(--space-2);
+  /* Off-screen sections skip style, layout and paint until they approach the viewport */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1000px;
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-block: var(--space-16);
+  }
+}
+
+.tone-ivory {
+  background: var(--ivory-50);
+}
+
+.tone-parchment {
+  background: var(--ivory-100);
+}
+
+.tone-dark {
+  background: var(--emerald-900);
+  color: var(--ivory-100);
+}
+
+/* Scalloped jharokha edge where a dark band meets a light one */
+.tone-dark.has-scallop::before,
+.tone-dark.has-scallop-bottom::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  height: 14px;
+  background: radial-gradient(circle at 14px 0, var(--scallop-from, var(--ivory-50)) 13px, transparent 14px) 0 0 / 28px 14px repeat-x;
+  pointer-events: none;
+}
+
+.tone-dark.has-scallop::before {
+  top: -1px;
+}
+
+.tone-dark.has-scallop-bottom::after {
+  bottom: -1px;
+  transform: scaleY(-1);
+  background-image: radial-gradient(circle at 14px 0, var(--scallop-to, var(--ivory-50)) 13px, transparent 14px);
+}
+
+/* Background-drawn motifs (see components/Motifs.jsx) */
+.mandala {
+  aspect-ratio: 1;
+  background: center / contain no-repeat;
+}
+
+.toran {
+  background: 50% 0 / auto 100% repeat-x;
+}
+
+/* Typography helpers */
+.label {
+  font-family: var(--font-label);
+  font-weight: 500;
+  font-size: var(--text-xs);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+h1,
+h2,
+h3,
+h4,
+.lede {
+  text-wrap: balance;
+}
+
+.script {
+  font-family: var(--font-script);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.amp {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.62em;
+  padding-inline: 0.12em;
+  color: #8f6f3a;
+}
+
+.tone-dark .amp {
+  color: var(--gold-300);
+}
+
+.lede {
+  font-style: italic;
+  font-size: var(--text-md);
+  color: var(--ink-soft);
+}
+
+.tone-dark .lede {
+  color: var(--ivory-200);
+}
+
+/* Buttons */
+.button {
+  --button-bg: var(--emerald-800);
+  --button-fg: var(--ivory-50);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 48px;
+  padding: var(--space-1) var(--space-4);
+  border-radius: 999px;
+  border: 1px solid var(--button-bg);
+  background: var(--button-bg);
+  color: var(--button-fg);
+  font-family: var(--font-label);
+  font-weight: 500;
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.22) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 700ms var(--ease-out);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.button:hover::after {
+  transform: translateX(100%);
+}
+
+.button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.button svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.button--ghost {
+  --button-bg: transparent;
+  --button-fg: var(--emerald-800);
+  border-color: currentColor;
+}
+
+.button--ghost:hover {
+  background: rgb(15 59 53 / 0.06);
+}
+
+.button--gold {
+  --button-bg: var(--gold-300);
+  --button-fg: var(--emerald-950);
+}
+
+.tone-dark .button--ghost {
+  --button-fg: var(--gold-200);
+}
+
+.tone-dark .button--ghost:hover {
+  background: rgb(226 201 149 / 0.08);
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+/* Narrow phones: stack paired buttons at full width so long labels sit on one line */
+@media (max-width: 419px) {
+  .button-row > .button {
+    flex: 1 1 100%;
+    padding-inline: var(--space-2);
+    letter-spacing: 0.14em;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity var(--duration-slow) var(--ease-out) var(--delay, 0ms),
+    transform var(--duration-slow) var(--ease-out) var(--delay, 0ms);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

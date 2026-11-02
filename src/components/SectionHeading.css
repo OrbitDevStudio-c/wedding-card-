@@ -1,0 +1,47 @@
+.section-heading {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .section-heading {
+    margin-bottom: var(--space-8);
+  }
+}
+
+.section-heading__eyebrow {
+  color: var(--gold-700);
+}
+
+.tone-dark .section-heading__eyebrow {
+  color: var(--gold-300);
+}
+
+.section-heading__title {
+  font-size: var(--text-2xl);
+  color: var(--emerald-800);
+  /* Script ascenders need breathing room so they never collide with the eyebrow */
+  padding-block: var(--space-1) 0;
+}
+
+.tone-dark .section-heading__title {
+  color: var(--ivory-50);
+}
+
+.section-heading__ornament {
+  width: 10rem;
+  height: auto;
+  color: var(--gold-500);
+}
+
+.tone-dark .section-heading__ornament {
+  color: var(--gold-400);
+}
+
+.section-heading__lede {
+  max-width: 34rem;
+  margin-top: var(--space-1);
+}

@@ -1,0 +1,80 @@
+﻿.date-reveal {
+  background:
+    radial-gradient(60% 50% at 50% 60%, rgb(226 201 149 / 0.08), transparent 70%),
+    var(--emerald-900);
+  padding-bottom: var(--space-8);
+}
+
+.date-reveal__stage {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+}
+
+.date-card {
+  position: relative;
+  width: min(100%, 280px);
+  padding: 8px;
+  border: 1px solid rgb(226 201 149 / 0.6);
+  border-radius: 999px 999px 20px 20px;
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.6);
+}
+
+.date-card > .scratch {
+  border-radius: 999px 999px 14px 14px;
+}
+
+.date-card__face {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-half);
+  min-height: 360px;
+  padding: var(--space-8) var(--space-3) var(--space-4);
+  background:
+    radial-gradient(circle at 50% 30%, #fffdf7, var(--ivory-100) 70%);
+  color: var(--emerald-800);
+  text-align: center;
+}
+
+.date-card__weekdays {
+  color: var(--gold-700);
+}
+
+.date-card__days {
+  font-size: clamp(3.25rem, 14vw, 4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+}
+
+.date-card__month {
+  margin-top: calc(var(--space-1) * -1);
+  font-size: 2.75rem;
+  color: var(--emerald-700);
+}
+
+.date-card__year {
+  font-size: var(--text-sm);
+  letter-spacing: 0.4em;
+  color: var(--emerald-800);
+}
+
+.date-card__place {
+  margin-top: var(--space-1);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.date-reveal__actions {
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+}
+
+.date-reveal__done {
+  font-style: italic;
+  font-size: var(--text-md);
+  color: var(--gold-200);
+  animation: fade-up 900ms var(--ease-out) both;
+}

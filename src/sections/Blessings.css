@@ -1,0 +1,90 @@
+.blessings {
+  background:
+    radial-gradient(70% 60% at 50% 40%, rgb(226 201 149 / 0.08), transparent 70%),
+    var(--emerald-900);
+}
+
+.blessings__card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  max-width: 34rem;
+  margin-inline: auto;
+  padding: var(--space-12) var(--space-3) var(--space-6);
+  overflow: hidden;
+  border: 1px solid rgb(226 201 149 / 0.6);
+  border-radius: 999px 999px var(--radius-md) var(--radius-md);
+  background: var(--ivory-50);
+  color: var(--ink);
+  text-align: center;
+  box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.7);
+}
+
+.blessings__card::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgb(207 174 114 / 0.5);
+  border-radius: 999px 999px 10px 10px;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .blessings__card {
+    padding: var(--space-16) var(--space-8) var(--space-8);
+  }
+}
+
+.blessings__mandala {
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  width: 140%;
+  max-width: none;
+  opacity: 0.16;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.blessings__eyebrow {
+  position: relative;
+  color: var(--gold-700);
+}
+
+.blessings__title {
+  position: relative;
+  margin-top: var(--space-1);
+  font-size: var(--text-2xl);
+  color: var(--emerald-800);
+}
+
+.blessings__ornament {
+  width: 9rem;
+  height: auto;
+  margin-top: var(--space-1);
+  color: var(--gold-500);
+}
+
+.blessings__quote {
+  margin-top: var(--space-3);
+  font-size: var(--text-lg);
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--emerald-800);
+}
+
+.blessings__message {
+  margin-top: var(--space-2);
+  color: var(--ink-soft);
+}
+
+.blessings__signature {
+  margin-top: var(--space-4);
+  font-size: clamp(2.5rem, 2rem + 2vw, 3.25rem);
+  color: var(--emerald-800);
+}
+
+.blessings__hashtag {
+  margin-top: var(--space-1);
+  color: var(--gold-700);
+}

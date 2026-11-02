@@ -1,0 +1,275 @@
+.intro {
+  --seal: clamp(124px, 32vw, 172px);
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  perspective: 1800px;
+  overflow: hidden;
+  color: var(--ivory-50);
+}
+
+.intro__door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(50% + 1px);
+  background:
+    radial-gradient(120% 60% at 50% 50%, rgb(255 255 255 / 0.04), transparent 70%),
+    linear-gradient(90deg, var(--emerald-950), var(--emerald-800) 70%, var(--emerald-700));
+  backface-visibility: hidden;
+  transition: transform 1900ms var(--ease-in-out), opacity 600ms ease 1300ms;
+  will-change: transform;
+}
+
+.intro__door--left {
+  left: 0;
+  transform-origin: left center;
+  box-shadow: inset -12px 0 24px -12px rgb(0 0 0 / 0.55);
+}
+
+.intro__door--right {
+  right: 0;
+  transform-origin: right center;
+  background:
+    radial-gradient(120% 60% at 50% 50%, rgb(255 255 255 / 0.04), transparent 70%),
+    linear-gradient(270deg, var(--emerald-950), var(--emerald-800) 70%, var(--emerald-700));
+  box-shadow: inset 12px 0 24px -12px rgb(0 0 0 / 0.55);
+}
+
+.intro__panel {
+  position: absolute;
+  inset: max(5vh, 28px) 12% max(5vh, 28px) 14%;
+  border: 1px solid rgb(207 174 114 / 0.55);
+  border-radius: 999px 999px 6px 6px;
+}
+
+.intro__door--right .intro__panel {
+  inset-inline: 14% 12%;
+}
+
+.intro__panel::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgb(207 174 114 / 0.25);
+  border-radius: inherit;
+}
+
+.intro__rosette {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  width: min(42%, 150px);
+  color: var(--gold-400);
+  opacity: 0.55;
+  transform: translateX(-50%);
+}
+
+.intro__studs {
+  position: absolute;
+  inset: 62% 14% 6%;
+  background: radial-gradient(circle, rgb(226 201 149 / 0.5) 1.6px, transparent 2.4px) center / 28px 28px;
+  -webkit-mask-image: linear-gradient(transparent, #000 30%);
+  mask-image: linear-gradient(transparent, #000 30%);
+}
+
+.intro__seal-half {
+  position: absolute;
+  top: 50%;
+  width: calc(var(--seal) / 2);
+  height: var(--seal);
+  margin-top: calc(var(--seal) / -2);
+  overflow: hidden;
+  filter: drop-shadow(0 10px 18px rgb(0 0 0 / 0.45));
+  transition: transform 500ms var(--ease-out);
+}
+
+.intro__door--left .intro__seal-half {
+  right: 1px;
+}
+
+.intro__door--right .intro__seal-half {
+  left: 1px;
+}
+
+.seal {
+  width: var(--seal);
+  max-width: none;
+  height: var(--seal);
+}
+
+.intro__door--right .seal {
+  margin-left: calc(var(--seal) / -2);
+}
+
+.seal .monogram {
+  --monogram-frame: #6b4c1f;
+  --monogram-ink: #5a3f15;
+  width: 72px;
+  height: 91px;
+}
+
+.intro__content {
+  position: absolute;
+  inset: 0;
+  transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+}
+
+.intro__top {
+  position: absolute;
+  bottom: calc(50% + var(--seal) / 2 + var(--space-4));
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  width: min(100% - var(--space-6), 36rem);
+  text-align: center;
+  transform: translateX(-50%);
+  animation: intro-rise 1400ms var(--ease-out) both;
+}
+
+.intro__top::before {
+  content: '';
+  position: absolute;
+  inset: -30% -10%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgb(6 27 24 / 0.85), transparent);
+}
+
+.intro__greeting {
+  font-style: italic;
+  font-size: var(--text-md);
+  color: var(--gold-200);
+}
+
+.intro__eyebrow {
+  color: var(--gold-300);
+}
+
+.intro__names {
+  font-size: clamp(2.75rem, 10vw, 4.5rem);
+  color: var(--ivory-50);
+}
+
+.intro__amp {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.6em;
+  color: var(--gold-300);
+}
+
+.intro__open {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--seal);
+  height: var(--seal);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.intro__open:hover {
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
+.intro__open:focus-visible {
+  outline: 2px solid var(--gold-300);
+  outline-offset: 10px;
+  border-radius: 50%;
+}
+
+.intro__ring {
+  position: absolute;
+  inset: -6px;
+  border: 1px solid var(--gold-300);
+  border-radius: 50%;
+  opacity: 0;
+  animation: intro-pulse 2600ms var(--ease-out) 1200ms infinite;
+}
+
+.intro__ring--late {
+  animation-delay: 2500ms;
+}
+
+.intro__hint {
+  position: absolute;
+  top: calc(50% + var(--seal) / 2 + var(--space-3));
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--gold-200);
+  animation: intro-rise 1400ms var(--ease-out) 300ms both;
+}
+
+/* Opening: seal cracks apart, then the doors swing inwards */
+.intro[data-state='opening'] .intro__door--left .intro__seal-half {
+  transform: translateX(-10px) rotate(-10deg);
+}
+
+.intro[data-state='opening'] .intro__door--right .intro__seal-half {
+  transform: translateX(10px) rotate(10deg);
+}
+
+.intro[data-state='opening'] .intro__door--left {
+  transform: rotateY(96deg);
+  opacity: 0;
+  transition-delay: 250ms, 1300ms;
+}
+
+.intro[data-state='opening'] .intro__door--right {
+  transform: rotateY(-96deg);
+  opacity: 0;
+  transition-delay: 250ms, 1300ms;
+}
+
+.intro[data-state='opening'] .intro__content {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+@keyframes intro-pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+
+@keyframes intro-rise {
+  from {
+    transform: translate(-50%, 16px);
+  }
+}
+
+.intro__hint {
+  animation-name: intro-rise-hint;
+}
+
+@keyframes intro-rise-hint {
+  from {
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro[data-state='opening'] .intro__door--left,
+  .intro[data-state='opening'] .intro__door--right {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+
+  .intro__ring {
+    display: none;
+  }
+}
+
+@media (max-height: 620px) {
+  .intro__rosette {
+    display: none;
+  }
+}

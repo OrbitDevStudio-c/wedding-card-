@@ -1,0 +1,50 @@
+.venue__layout {
+  display: grid;
+  gap: var(--space-5);
+  align-items: center;
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+.venue__art {
+  max-width: 40rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.venue__card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.venue__name {
+  font-size: clamp(1.875rem, 1.4rem + 2vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--emerald-800);
+}
+
+.venue__address {
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.venue__dates {
+  padding: var(--space-1) var(--space-3);
+  border-block: 1px solid rgb(207 174 114 / 0.6);
+  color: var(--emerald-800);
+}
+
+@media (min-width: 1024px) {
+  .venue__layout {
+    grid-template-columns: 3fr 2fr;
+    gap: var(--space-8);
+  }
+
+  .venue__card {
+    justify-items: start;
+    text-align: left;
+  }
+}

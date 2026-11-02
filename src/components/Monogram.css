@@ -1,0 +1,40 @@
+.monogram {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.monogram__frame {
+  stroke: var(--monogram-frame, var(--gold-500));
+}
+
+.monogram__letters,
+.monogram text {
+  font-family: var(--font-script);
+  fill: var(--monogram-ink, var(--emerald-800));
+}
+
+.monogram__sheen {
+  transform: translateX(0);
+}
+
+/* Only shimmer once the invitation is open; nothing animates behind the closed doors */
+.site.is-open .monogram__sheen {
+  animation: monogram-sheen 7s var(--ease-in-out) 2.4s infinite;
+}
+
+@keyframes monogram-sheen {
+  0% {
+    transform: translateX(0);
+  }
+  35%,
+  100% {
+    transform: translateX(200px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monogram__sheen {
+    display: none;
+  }
+}

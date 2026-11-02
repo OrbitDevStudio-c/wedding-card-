@@ -1,0 +1,16 @@
+node_modules
+dist
+.env
+.env.local
+test-results
+playwright-report
+screenshots
+lighthouse
+.claude
+# Promo reel: marketing material kept on this PC only (48 MB video, render tooling, ffmpeg binary)
+output
+promo-reel
+# Security audit reports describe the local machine; keep them out of the public repo
+LOCAL-SECURITY-AUDIT.md
+GITHUB-SECURITY-AUDIT.md
+FINAL-PROJECT-REPORT.md

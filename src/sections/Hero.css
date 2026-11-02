@@ -1,0 +1,267 @@
+.hero {
+  --hero-scroll: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100svh;
+  padding: var(--space-10) var(--gutter) var(--space-4);
+  overflow: hidden;
+  background:
+    radial-gradient(80% 50% at 50% 42%, #fffdf7 0%, transparent 70%),
+    var(--ivory-50);
+}
+
+.hero__backdrop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.hero__mandala-wrap {
+  width: min(150vw, 980px);
+  transform: translate3d(0, calc(var(--hero-scroll) * 0.3px), 0);
+}
+
+.hero__mandala {
+  width: 100%;
+  opacity: 0.22;
+}
+
+.site.is-open .hero__mandala {
+  animation: hero-spin 240s linear infinite;
+}
+
+@keyframes hero-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hero__toran {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 72px;
+  transform-origin: top;
+  transform: translate3d(0, calc(var(--hero-scroll) * -0.12px), 0);
+}
+
+.hero__arch {
+  position: relative;
+  width: min(100%, 46rem);
+  margin-block: auto;
+  padding: clamp(4.5rem, 18vw, 7rem) var(--space-3) var(--space-6);
+  border: 1px solid var(--gold-400);
+  border-bottom: 0;
+  border-radius: 999px 999px 0 0;
+}
+
+.hero__arch::before {
+  content: '';
+  position: absolute;
+  inset: 8px 8px 0;
+  border: 1px solid rgb(207 174 114 / 0.45);
+  border-bottom: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.hero__inner {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.hero__greeting {
+  margin-bottom: var(--space-2);
+  font-style: italic;
+  font-size: var(--text-lg);
+  color: var(--gold-700);
+}
+
+.hero__monogram {
+  width: clamp(80px, 20vw, 124px);
+  margin-bottom: var(--space-3);
+}
+
+.hero__eyebrow {
+  color: var(--gold-700);
+}
+
+.hero__line {
+  max-width: 24rem;
+  margin-top: var(--space-1);
+  font-style: italic;
+  font-size: var(--text-md);
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.hero__names {
+  display: grid;
+  justify-items: center;
+  margin-block: var(--space-3) var(--space-2);
+  font-size: var(--text-3xl);
+  line-height: 1.3;
+  color: var(--emerald-800);
+}
+
+.hero__name {
+  display: block;
+  padding-inline: 0.15em;
+}
+
+.hero__amp {
+  display: block;
+  line-height: 1;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.45em;
+  color: #8f6f3a;
+}
+
+.hero__parents {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+  margin-top: var(--space-2);
+  font-size: var(--text-base);
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.hero__parents p {
+  display: grid;
+  gap: var(--space-half);
+  text-wrap: balance;
+}
+
+.hero__parents .label {
+  font-size: var(--text-xs);
+  color: var(--gold-700);
+}
+
+.hero__parents-rule {
+  width: 40px;
+  height: 1px;
+  background: var(--gold-400);
+}
+
+@media (min-width: 768px) {
+  .hero__parents {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .hero__parents-rule {
+    width: 1px;
+    height: 48px;
+  }
+}
+
+/* Short landscape screens (most laptops, tablets on their side): set the names on one line and
+   tighten the arch so the names, parents and date all land in the first screen */
+@media (min-width: 1024px) and (max-height: 900px) {
+  .hero {
+    padding-top: var(--space-8);
+  }
+
+  .hero__arch {
+    padding-top: clamp(3.5rem, 9svh, 7rem);
+  }
+
+  .hero__monogram {
+    width: clamp(80px, 13svh, 124px);
+    margin-bottom: var(--space-2);
+  }
+
+  .hero__names {
+    grid-auto-flow: column;
+    align-items: center;
+    column-gap: 0.2em;
+    margin-block: var(--space-2) var(--space-1);
+    font-size: clamp(4.5rem, 1rem + 9svh, 7rem);
+  }
+}
+
+.hero__date {
+  margin-top: var(--space-4);
+  padding: var(--space-1) var(--space-3);
+  border-block: 1px solid rgb(207 174 114 / 0.6);
+  color: var(--emerald-800);
+}
+
+.hero__scroll {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+  padding: var(--space-1) var(--space-2);
+  color: var(--gold-700);
+  text-decoration: none;
+}
+
+.hero__scroll-line {
+  position: relative;
+  width: 1px;
+  height: 40px;
+  overflow: hidden;
+  background: rgb(207 174 114 / 0.4);
+}
+
+.hero__scroll-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -1px;
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--gold-700);
+  animation: scroll-cue 2200ms var(--ease-in-out) infinite;
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-14px);
+  }
+  70%,
+  100% {
+    transform: translateY(42px);
+  }
+}
+
+/* Entrance, staged as the doors swing open */
+.hero__item {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+}
+
+.site.is-open .hero__item {
+  animation: hero-in 1200ms var(--ease-out) both;
+  animation-delay: calc(350ms + var(--i, 0) * 110ms);
+}
+
+@keyframes hero-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__item {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero__mandala,
+  .hero__scroll-line::after {
+    animation: none;
+  }
+}

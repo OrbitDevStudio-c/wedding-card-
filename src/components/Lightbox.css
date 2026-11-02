@@ -1,0 +1,130 @@
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: var(--space-8) var(--space-2) var(--space-10);
+  background: rgb(6 27 24 / 0.94);
+  color: var(--ivory-100);
+  animation: lightbox-in 300ms var(--ease-out);
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.lightbox__figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  max-width: 100%;
+  max-height: 100%;
+  touch-action: pan-y;
+}
+
+.lightbox__picture {
+  animation: lightbox-photo 400ms var(--ease-out);
+}
+
+@keyframes lightbox-photo {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+.lightbox__img {
+  width: auto;
+  max-width: min(100%, 1100px);
+  max-height: calc(100svh - 12rem);
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.7);
+}
+
+/* Below 1024px the prev/next buttons sit under the photo, so leave room for a wrapped caption above them */
+@media (max-width: 1023px) {
+  .lightbox__img {
+    max-height: max(40svh, calc(100svh - 18rem));
+  }
+}
+
+.lightbox__caption {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-half);
+  max-width: 36rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.lightbox__caption .label {
+  font-style: normal;
+  color: var(--gold-300);
+}
+
+.lightbox__control {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgb(226 201 149 / 0.5);
+  color: var(--gold-200);
+  background: rgb(15 59 53 / 0.7);
+  transition: transform var(--duration-fast) var(--ease-out), background-color var(--duration-fast);
+}
+
+.lightbox__control:hover {
+  background: var(--emerald-700);
+  transform: scale(1.06);
+}
+
+.lightbox__control svg {
+  width: 22px;
+  height: 22px;
+}
+
+.lightbox__close {
+  top: max(var(--space-2), env(safe-area-inset-top));
+  right: var(--space-2);
+}
+
+.lightbox__prev,
+.lightbox__next {
+  bottom: var(--space-2);
+}
+
+.lightbox__prev {
+  left: calc(50% - 56px);
+}
+
+.lightbox__next {
+  right: calc(50% - 56px);
+}
+
+@media (min-width: 1024px) {
+  .lightbox__prev,
+  .lightbox__next {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+  }
+
+  .lightbox__prev {
+    left: var(--space-4);
+  }
+
+  .lightbox__next {
+    right: var(--space-4);
+  }
+
+  .lightbox__prev:hover,
+  .lightbox__next:hover {
+    transform: translateY(-50%) scale(1.06);
+  }
+}
