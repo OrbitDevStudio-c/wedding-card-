@@ -13,9 +13,15 @@
     "music": "node scripts/make-music.mjs",
     "test": "playwright test",
     "audit:responsive": "node scripts/responsive-audit.mjs",
-    "lighthouse": "node scripts/lighthouse.mjs"
+    "lighthouse": "node scripts/lighthouse.mjs",
+    "server": "npm --prefix server run dev",
+    "server:install": "npm --prefix server install",
+    "seed": "npm --prefix server run seed",
+    "gift-art": "node scripts/make-gift-art.mjs",
+    "test:gifts": "playwright test tests/gifts"
   },
   "dependencies": {
+    "qrcode": "1.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

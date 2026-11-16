@@ -2,12 +2,46 @@
 import './styles/tokens.css';
 import './styles/base.css';
 import './components/FloatingControls.css';
-import { StrictMode } from 'react';
+import { StrictMode, Suspense, lazy } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
+import { gifts } from './config.js';
+import { usePath } from './lib/router.js';
+
+// The gifts page and the couple dashboard are separate chunks, so the invitation never
+// downloads their code (and the public pages never download the dashboard's).
+const GiftsPage = lazy(() => import('./gifts/GiftsPage.jsx'));
+const CoupleApp = lazy(() => import('./couple/CoupleApp.jsx'));
+
+function PageFallback() {
+  return (
+    <div className="page-loading" role="status">
+      <span className="visually-hidden">Loading…</span>
+    </div>
+  );
+}
+
+function Root() {
+  const path = usePath();
+  if (gifts.enabled && (path === '/gifts' || path.startsWith('/gifts/'))) {
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <GiftsPage path={path} />
+      </Suspense>
+    );
+  }
+  if (path === '/couple' || path.startsWith('/couple/')) {
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <CoupleApp path={path} />
+      </Suspense>
+    );
+  }
+  return <App />;
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <Root />
   </StrictMode>,
 );

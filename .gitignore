@@ -14,3 +14,5 @@ promo-reel
 LOCAL-SECURITY-AUDIT.md
 GITHUB-SECURITY-AUDIT.md
 FINAL-PROJECT-REPORT.md
+# Gift images uploaded through the couple dashboard (stored by the API server)
+server/uploads

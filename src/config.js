@@ -225,7 +225,7 @@ export const travel = {
     },
     {
       q: 'Do you have a gift registry?',
-      a: 'Your presence is the only gift we need. If you insist, your blessings and a handwritten note will mean the most.',
+      a: 'Your presence is the only gift we need. If you would like to give something more, our Wedding Gifts page has a small wishlist and a few dreams we are saving for.',
     },
   ],
 };
@@ -236,6 +236,57 @@ export const rsvp = {
   endpoint: env.VITE_RSVP_ENDPOINT || '',
   deadline: dates.rsvpBy,
   maxGuests: 6,
+};
+
+// Wedding Gifts: a private wishlist and "Our Dreams" contributions, served by the API in /server.
+// This block controls wording and presentation only. Gifts, dreams and reservations live in the
+// database and are managed from the couple dashboard at /couple/dashboard.
+export const gifts = {
+  enabled: env.VITE_GIFTS_ENABLED !== 'false',
+  // Must match the wedding slug created with `npm run seed` in /server.
+  weddingSlug: env.VITE_WEDDING_SLUG || 'alica-rushil',
+  navLabel: 'Wedding Gifts',
+  teaser: {
+    eyebrow: 'A gift registry for two',
+    title: 'Wedding Gifts',
+    text: 'Your presence is our greatest gift. If you would still like to bless our new beginning, we have gathered a few things that would make us smile, and a few dreams we are saving for.',
+    cta: 'View our wishlist',
+  },
+  hero: {
+    eyebrow: 'A little gift, a big dream',
+    title: 'Your Presence Is Our Greatest Gift',
+    message:
+      'But if you wish to make our new beginning even more special, here are a few things that would make us smile.',
+    photo: 'gallery-1',
+  },
+  wishlist: {
+    eyebrow: 'Chosen with love',
+    title: 'Our Wishlist',
+    intro: 'Reserve a gift so nobody else picks the same one, then buy it from any store you like.',
+    emptyTitle: 'Every gift has found its giver',
+    emptyText: 'Thank you, everyone. Your blessings are the only thing left on our list.',
+  },
+  reservation: {
+    privacyNotice: 'Your gift reservation is private. Only the wedding couple can see who selected this gift.',
+    successTitle: 'Thank You for Making Their Day Special!',
+    successText:
+      'Your gift has been reserved successfully. You can now purchase it from your preferred store or shopping website.',
+  },
+  dreams: {
+    eyebrow: 'Bigger than a box',
+    title: 'Our Dreams',
+    intro: 'Some gifts do not fit in a box. Help us take the first steps towards the adventures we are dreaming of.',
+  },
+  // Shagun-style amounts ending in 1, considered auspicious.
+  contributionPresets: [1100, 2100, 5100, 11000],
+  categories: [
+    { id: 'electronics', label: 'Electronics' },
+    { id: 'fashion', label: 'Fashion' },
+    { id: 'lifestyle', label: 'Lifestyle' },
+    { id: 'home', label: 'Home & Living' },
+    { id: 'experiences', label: 'Experiences' },
+    { id: 'other', label: 'Other' },
+  ],
 };
 
 export const blessings = {

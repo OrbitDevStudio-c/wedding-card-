@@ -16,7 +16,7 @@ export const test = base.extend({
 
 export { expect };
 
-export const SECTIONS = ['top', 'story', 'date', 'countdown', 'venue', 'events', 'gallery', 'travel', 'rsvp', 'blessings'];
+export const SECTIONS = ['top', 'story', 'date', 'countdown', 'venue', 'events', 'gallery', 'travel', 'gifts', 'rsvp', 'blessings'];
 
 export async function openInvite(page, path = '/') {
   await page.goto(path);

@@ -23,6 +23,7 @@ Crafted by [OrbitDevStudio](https://orbit-dev-studio.vercel.app/).
 - **Background music** that fades in when the doors open and pauses when the guest switches apps.
 - **WhatsApp sharing** with a rich link preview (title, date and image).
 - **Responsive and accessible:** tested from 320 px phones to 1920 px desktops, WCAG 2.1 AA checked with axe-core, and reduced-motion support.
+- **Wedding Gifts & Our Dreams:** a private gift registry where each gift can be reserved by exactly one guest (enforced by the database), contributions towards bigger dreams with verified Razorpay payments, a secure couple dashboard and QR codes. See [Wedding Gifts & Our Dreams](#wedding-gifts--our-dreams).
 - **Fast:** under 70 KB of JavaScript (gzip), AVIF/WebP photos, self-hosted fonts, and lazy-loaded gallery and music.
 
 ---
@@ -40,9 +41,10 @@ Crafted by [OrbitDevStudio](https://orbit-dev-studio.vercel.app/).
 | 7 | **The Celebrations** | Events grouped by day (Mehendi, Haldi, Sangeet, Wedding Pheras, Reception). Each arch-topped card shows an icon, time, place, a short description and a **dress code with colour swatches**, so guests know what to wear. |
 | 8 | **Moments: gallery** | A masonry photo grid; every third frame has an arch crown. Tapping a photo opens a full-screen **lightbox** with caption, "2 / 6" counter, next/previous buttons, **swipe on phones**, arrow keys and Escape. |
 | 9 | **Travel & Stay** | Cards for arriving **by air, rail and road**, a shuttle note, **partner hotels** with distance and a map pin for each, and a **"Good to know" FAQ** accordion (accommodation, weather, children, plus-ones, gifts). |
-| 10 | **RSVP: "Will You Join Us?"** | Name and phone (validated), **Joyfully accept / Regretfully decline** cards, a **guest stepper** (1–6), celebration chips with **Select all**, and an optional note with a character counter. Clear inline errors, a sending spinner, then a **thank-you screen** with an animated check mark and petals. The response is remembered on the device, with **Edit my response**. |
-| 11 | **Blessings: Thank You** | An arch card over a mandala with a quote, a thank-you message, the couple's signature and their wedding hashtag. |
-| 12 | **Footer** | The monogram and the "Crafted with ❤️ in India by OrbitDevStudio" credit. |
+| 10 | **Wedding Gifts** | An emerald band with two arch cards, **Our Wishlist** and **Our Dreams**, and a **View our wishlist** button that opens the dedicated gift page at `/gifts` (keeping `?guest=`). Hidden when gifts are disabled. |
+| 11 | **RSVP: "Will You Join Us?"** | Name and phone (validated), **Joyfully accept / Regretfully decline** cards, a **guest stepper** (1–6), celebration chips with **Select all**, and an optional note with a character counter. Clear inline errors, a sending spinner, then a **thank-you screen** with an animated check mark and petals. The response is remembered on the device, with **Edit my response**. |
+| 12 | **Blessings: Thank You** | An arch card over a mandala with a quote, a thank-you message, the couple's signature and their wedding hashtag. |
+| 13 | **Footer** | The monogram and the "Crafted with ❤️ in India by OrbitDevStudio" credit. |
 
 **Always available**, floating at the bottom right once the doors open:
 - **Music** on/off, with a small dancing equaliser while it plays
@@ -50,6 +52,182 @@ Crafted by [OrbitDevStudio](https://orbit-dev-studio.vercel.app/).
 - **Back to top** (on phones it appears when the guest scrolls up)
 
 **Ambient touches:** soft marigold and rose petals drift down the page. On desktop, the cursor leaves a trail of petals. All motion switches off for guests who prefer reduced motion.
+
+---
+
+## Wedding Gifts & Our Dreams
+
+A gift registry for two, built as another chapter of the invitation rather than a separate app.
+
+| Route | Who | What |
+|---|---|---|
+| `/#gifts` | Guests | The **Wedding Gifts** section in the invitation, linking to the gift page |
+| `/gifts` | Guests | Hero with the couple's photo, **Our Wishlist** (category filters, reserve a gift) and **Our Dreams** |
+| `/gifts/dream/<slug>` | Guests | One dream: cover, progress and the contribution form. Every dream has its own QR code |
+| `/couple/login` | Couple | Sign in |
+| `/couple/dashboard` | Couple | Overview, Wishlist, Reservations, Dreams, Contributions, Share & QR |
+
+`?guest=Name` is carried from the invitation to the gift pages, greets the guest and pre-fills their name.
+
+### Two separate systems
+
+**Physical wishlist.** Guests reserve a gift, then buy it anywhere they like. The site never sells or processes gift purchases.
+
+- Only one guest can reserve a gift. A **partial unique index** (`UNIQUE (gift_id) WHERE active`) on
+  `gift_reservations` makes the database reject a second active reservation, so even simultaneous requests
+  produce exactly one success; the others get a friendly "Another guest has just chosen this gift".
+- Reserved gifts are filtered out of the public list **in SQL**. Public responses contain only
+  `id, name, description, image, estimatedPrice, purchaseUrl, category`: never a guest's name, phone,
+  message, or even a "reserved" flag.
+- Reservations never expire. They stay active until the couple **releases** them (with confirmation),
+  which puts the gift back on the wishlist and keeps the old reservation as history. The couple can also
+  **mark a gift received**.
+
+**Our Dreams.** Guests contribute money towards larger goals (a honeymoon, a home).
+
+- Amounts only count once the **server** has verified them: either Razorpay's checkout signature
+  (`HMAC-SHA256(order_id|payment_id, key_secret)`) or a signed webhook. A browser saying "paid" is never enough.
+- Webhook event ids are stored once, and marking a payment paid only succeeds if it is not paid already,
+  so duplicate deliveries never double-count. A webhook whose amount differs from the order is ignored.
+- The couple can record gifts received offline (cash, bank transfer) per dream; progress shows verified
+  online payments plus that amount.
+- Reservations and contributions live in different tables and code paths and never affect each other.
+
+### Architecture
+
+```
+Browser ── /api/* (same origin) ──► Express API (server/) ──► PostgreSQL (Neon)
+   │                                     │
+   └ Vite SPA: invitation, /gifts,       ├ public:  wishlist, reserve, dreams, contribute, verify
+     /couple/* (code-split chunks)       ├ couple:  session + CSRF + wedding ownership on every route
+                                         └ webhook: raw-body HMAC, idempotent
+```
+
+The browser always calls **same-origin `/api`**. Locally Vite proxies it to the API (`API_PROXY_TARGET`,
+default `http://127.0.0.1:4000`); in production your host rewrites `/api/*` to the API server. Keeping it
+same-origin lets the couple's session cookie be `HttpOnly; SameSite=Strict`.
+
+The gifts page and the dashboard are separate lazy chunks, so the invitation does not grow. Guests who never
+open the gift page never download it, and guests never download dashboard code.
+
+**Tables** (created automatically on start, in the Postgres schema `DB_SCHEMA`, default `wedding_gifts`):
+`weddings`, `couple_users`, `gifts`, `gift_reservations`, `dreams`, `dream_contributions`, `webhook_events`.
+All ids are UUIDs, and every couple query is scoped by the signed-in user's `wedding_id`.
+
+### Security
+
+| Concern | How it is handled |
+|---|---|
+| Authentication | bcrypt (cost 12) password hashes; JWT (HS256) in an `HttpOnly`, `SameSite=Strict` cookie (`Secure` in production). The user is re-loaded on every request, and `token_version` lets a password reset sign out old sessions |
+| Authorisation | Every `/api/couple/*` route is scoped to the session's wedding. Another couple's ids return 404 |
+| CSRF | Double-submit token: the readable `wg_csrf` cookie must be echoed in `X-CSRF-Token` on every write |
+| Injection | Parameterised SQL only; request bodies containing `$` operators or dotted keys are rejected; every field is type-checked |
+| Validation | Server-side for every field: lengths, phone format, whole rupees, `http(s)` links only, own or `https` images |
+| Abuse | Per-IP rate limits on reservations, contributions and login; a hidden honeypot field on guest forms |
+| Uploads | JPEG/PNG/WebP/AVIF up to 6 MB, decoded and **re-encoded to WebP by sharp** (drops metadata and anything that is not an image), random file names |
+| Headers | `helmet` defaults; `no-store` on availability and private responses; CORS only for origins in `CORS_ORIGINS` |
+| Privacy | No guest details in public APIs, HTML, config, bundles or analytics; the dashboard is `noindex` |
+| Secrets | Environment variables only. Nothing secret is in `src/` or the built bundle |
+
+### Running it locally
+
+```bash
+npm install
+npm run server:install                 # installs server/ dependencies
+# .env (project root) must contain NEON_DB=postgresql://... (or set DATABASE_URL)
+COUPLE_EMAIL=you@example.com COUPLE_PASSWORD='a long passphrase' npm run seed
+npm run server                         # API on http://localhost:4000 (tables are created on start)
+npm run dev                            # site on http://localhost:5173, with /api proxied to the API
+```
+
+`npm run seed` creates the wedding `alica-rushil` with the sample wishlist and three dreams, plus the couple
+login. It leaves existing gifts and dreams alone unless you add `-- --reset`, which also deletes that
+wedding's reservations and contributions (never use it on a live wedding).
+
+Couple accounts (any number, each tied to one wedding):
+
+```bash
+cd server
+COUPLE_PASSWORD='at least 12 characters' npm run create-couple -- --wedding alica-rushil --email partner@example.com
+```
+
+Running it again for the same email resets the password and signs out existing sessions.
+
+### Configuration
+
+Presentation lives in `src/config.js → gifts`: wording for the hero, wishlist, reservation privacy notice and
+success message, dreams intro, the category list and the contribution presets (₹1,100 / 2,100 / 5,100 / 11,000).
+Gifts, dreams and reservations themselves live only in the database and are managed from the dashboard.
+
+| Frontend variable | Default | Purpose |
+|---|---|---|
+| `VITE_WEDDING_SLUG` | `alica-rushil` | Which wedding the gift pages load |
+| `VITE_GIFTS_ENABLED` | `true` | `false` removes the invitation section and the `/gifts` routes |
+| `VITE_SITE_URL` | | Also the domain encoded in every QR code |
+
+The server can also switch gifts or dreams off per wedding (`weddings.gifts_enabled`, `dreams_enabled`).
+The public endpoints then return 404, and the gift page shows a gentle "not open" message.
+
+Server variables are documented in [`server/.env.example`](server/.env.example). The important ones are
+`DATABASE_URL` (or `NEON_DB`), `JWT_SECRET` (required in production, 32+ characters), `RAZORPAY_*`,
+`UPLOAD_DIR`, `CORS_ORIGINS` and `TRUST_PROXY`.
+
+### Payments (Razorpay)
+
+Without `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`, dreams run in **demo mode**. The page says so clearly,
+guests can leave a pledge that the couple sees as "Demo pledge", and **no money moves and totals do not change**.
+
+To take real contributions:
+
+1. Create a Razorpay account and complete KYC. Generate **API keys** (Dashboard → Account & Settings → API Keys).
+2. Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` on the API server.
+3. Add a webhook (Dashboard → Webhooks) pointing to `https://<your-site>/api/payments/razorpay/webhook`
+   with the events `payment.captured`, `order.paid` and `payment.failed`, and set its secret as `RAZORPAY_WEBHOOK_SECRET`.
+4. Test with `rzp_test_…` keys first, then switch to live keys.
+
+The flow: the server creates the order (so the amount cannot be altered in the browser) → Razorpay Checkout
+opens (its script loads only at that moment) → the server verifies the signature → the webhook confirms
+it again, idempotently.
+
+### QR codes
+
+Dashboard → **Share & QR** shows a master code for `/gifts` and one per dream (also under each dream's
+**QR** button), with **Download PNG** (1024 px), **Download SVG**, **Copy link** and **Regenerate**. Codes always
+encode `VITE_SITE_URL`, never `localhost`, so set it to the real domain before printing. Changing a dream's
+link changes its code, and the editor warns about this.
+
+### API
+
+Public (no login):
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/api/weddings/:slug` | Couple names, date, which features are on, payment mode |
+| GET | `/api/weddings/:slug/gifts` | Active, unreserved gifts only, public fields only |
+| POST | `/api/weddings/:slug/gifts/:giftId/reservations` | `{guestName, guestPhone?, message?}` → 201, or 409 `already_reserved` |
+| GET | `/api/weddings/:slug/dreams` | Active dreams with totals and progress |
+| GET | `/api/weddings/:slug/dreams/:dreamSlug` | One dream |
+| POST | `/api/weddings/:slug/dreams/:dreamSlug/contributions` | `{contributorName, amount, message?}` → a Razorpay order, or `{mode: 'demo'}` |
+| POST | `/api/weddings/:slug/contributions/verify` | `{orderId, paymentId, signature}` from Checkout |
+| POST | `/api/payments/razorpay/webhook` | Razorpay only; signature-checked |
+| POST | `/api/auth/login`, `/api/auth/logout` | Couple session |
+
+Private (session cookie, plus `X-CSRF-Token` on writes; always scoped to the couple's wedding):
+
+| Method | Path |
+|---|---|
+| GET | `/api/couple/me`, `/api/couple/dashboard` |
+| GET, POST | `/api/couple/gifts` |
+| PUT | `/api/couple/gifts/order` (`{ids: [...]}`), `/api/couple/gifts/:giftId` |
+| DELETE | `/api/couple/gifts/:giftId` (409 while reserved) |
+| POST | `/api/couple/uploads` (multipart field `image`) |
+| GET | `/api/couple/reservations` (`?status=active`) |
+| POST | `/api/couple/reservations/:id/release`, `/api/couple/reservations/:id/mark-received` |
+| GET, POST | `/api/couple/dreams` |
+| PUT, DELETE | `/api/couple/dreams/:dreamId` (delete is refused once verified payments exist; hide it instead) |
+| GET | `/api/couple/contributions` |
+
+Errors are JSON: `{error, message, fields?}`.
 
 ---
 
@@ -68,7 +246,9 @@ Crafted by [OrbitDevStudio](https://orbit-dev-studio.vercel.app/).
 | Testing | [Playwright](https://playwright.dev), [axe-core](https://github.com/dequelabs/axe-core) for accessibility, Lighthouse for performance |
 | Hosting | Any static host: Vercel, Netlify and others |
 
-Runtime dependencies are only `react` and `react-dom`. Everything else is a build-time or test-time tool.
+The site's runtime dependencies are `react`, `react-dom` and `qrcode` (loaded only inside the couple dashboard).
+The gifts API in [`server/`](server/) is a separate Node package: Express 5, `pg` (PostgreSQL / Neon), `bcryptjs`,
+`jsonwebtoken`, `helmet`, `express-rate-limit`, `cookie-parser`, `multer` and `sharp`.
 
 ---
 
@@ -109,6 +289,7 @@ RSVP, e.g. `https://your-site.vercel.app/?guest=Priya%20Sharma`.
 | `share`       | WhatsApp share message                                                       |
 | `credit`      | Footer credit text and link                                                  |
 | `seo`         | Page title, description and share image (injected into `index.html`)        |
+| `gifts`       | Gift page wording, categories, contribution presets, on/off (see Wedding Gifts) |
 
 Event `icon` values: `paisley`, `marigold`, `dhol`, `diya`, `sparkle`.
 Travel `icon` values: `plane`, `train`, `car`.
@@ -209,7 +390,28 @@ The project is a standard Vite app, and both hosts detect it with zero configura
   and add the environment variables under *Site settings → Environment*.
 
 Set `VITE_SITE_URL` to the final domain so the share image URL in the meta tags is absolute,
-which WhatsApp requires.
+which WhatsApp requires. It is also the domain inside every QR code.
+
+### Deploying the gifts API
+
+The site stays static; the API is a long-running Node service. Any Node host works (Render, Railway,
+Fly.io, a VPS). On the API host:
+
+1. Use `server/` as the root directory, build with `npm ci`, start with `npm start` (Node 18.18+).
+2. Set `NODE_ENV=production`, `DATABASE_URL` (the Neon pooled connection string) and `JWT_SECRET`, plus the
+   `RAZORPAY_*` variables when you are ready to take payments.
+3. Give `UPLOAD_DIR` a **persistent disk or volume**, or uploaded images will vanish on redeploy.
+4. Create the couple login once with `npm run seed` and `COUPLE_EMAIL`/`COUPLE_PASSWORD`, from the host's
+   shell or locally against the production `DATABASE_URL`.
+
+Then point the site's `/api` at it, so the browser sees one origin:
+
+- **Vercel:** add this rule **above** the existing one in `vercel.json`:
+  `{ "source": "/api/:path*", "destination": "https://YOUR-API-HOST/api/:path*" }`
+- **Netlify:** add `/api/*  https://YOUR-API-HOST/api/:splat  200` as the **first** line of `public/_redirects`.
+
+`vercel.json` and `public/_redirects` already send `/gifts` and `/couple/*` to the app. Set
+`TRUST_PROXY` to the number of proxies in front of the API so rate limits see real client IPs.
 
 ---
 
@@ -221,7 +423,7 @@ npm test                          # builds, serves and runs every spec at 5 view
 npm run lighthouse                # mobile Lighthouse against `npm run preview`
 ```
 
-The Playwright suite (`tests/`) runs every spec at 360, 390, 768, 1024 and 1440 px:
+The invitation specs (`tests/*.spec.js`) run at 360, 390, 768, 1024 and 1440 px:
 
 - every section renders; no console errors; no horizontal overflow at any scroll position
 - no overlapping text in any section (measured from glyph bounding boxes)
@@ -232,6 +434,28 @@ The Playwright suite (`tests/`) runs every spec at 360, 390, 768, 1024 and 1440 
 - Maps, Google Calendar, `.ics` download (5 events) and WhatsApp links
 - lightbox open / next / previous / arrow keys / Escape / focus return
 - FAQ expand and collapse; RSVP validation, loading, success and persistence
+
+**Gifts** (`tests/gifts/`). Playwright starts the API on port 4010 against a throwaway Postgres schema
+(`gifts_test`, reset before each run, using `NEON_DB`/`DATABASE_URL` from `.env`), a local fake of the Razorpay
+orders API, and test-only secrets. Nothing touches your real `wedding_gifts` data or real payments.
+
+- `api.spec.js` (runs once): public lists hide reserved and hidden gifts and carry no private fields;
+  validation; duplicate and **15 simultaneous** reservations give exactly one success; the unique index exists
+  and nothing expires; release and mark-received; 401 without a session, forged cookies, missing CSRF,
+  operator injection; **another wedding's couple cannot read or change these reservations**; add, edit,
+  reorder, hide and delete; unsafe links rejected; image re-encoding; forged payments and forged webhooks
+  change nothing; verified checkouts and webhooks count once; duplicate webhooks ignored; amount mismatches ignored
+- `ui.spec.js` (at 8 sizes, 320 to 1920 px): invitation → gift page with `?guest=`; filters and store links;
+  the full reservation dialog (validation, privacy notice, success, the gift disappears, Escape returns focus);
+  "Just missed it"; a dream page with a simulated, signature-verified payment and a forged one; the demo-mode label;
+  login, a private reservation with its message, release with confirmation; adding and editing a gift; QR codes
+  encode the deployed domain; no horizontal overflow and axe-core (WCAG 2.1 AA) on every gift and dashboard page
+
+```bash
+npm run test:gifts                    # only the gifts tests
+```
+
+The gifts tests are slower than the rest because every request goes to the remote database.
 
 Full-page screenshots for each viewport are written to `screenshots/`. `npm run lighthouse` writes
 `lighthouse/report.html`. Both folders are git-ignored.
@@ -258,12 +482,18 @@ src/
   sections/              one component (+ CSS) per section, Gallery code-split
   components/            Monogram, ScratchCard, Lightbox (lazy), Picture, motifs, icons…
   hooks/                 useInView, useCountdown, useMusic, useGuestName
-  lib/                   calendar (.ics / Google), RSVP submit, petal particle engine, motion
+  lib/                   calendar (.ics / Google), RSVP submit, petal particle engine, motion, API client, router
   styles/                design tokens (colours, type & 8px spacing scales) and base styles
 public/                  fonts (subset woff2), photos, music, share image, favicon
 photos-src/              original photos; run `npm run images` after changing them
-scripts/                 image pipeline, OG image, music synthesis, Lighthouse runner, responsive audit
-tests/                   Playwright specs
+  gifts/                 /gifts and /gifts/dream/:slug (lazy chunk): hero, wishlist, reserve dialog, dreams
+  couple/                /couple/* dashboard (lazy chunk): login, overview, wishlist, reservations, dreams, QR
+server/                  gifts API: Express + PostgreSQL (see "Wedding Gifts & Our Dreams")
+  src/db.js              connection pool and schema (tables, the unique active-reservation index)
+  src/routes/            public.js, couple.js, auth.js, payments.js (webhook)
+  scripts/               seed.js (sample wedding + couple login), create-couple.js
+scripts/                 image pipeline, OG image, music synthesis, gift artwork, Lighthouse runner, responsive audit
+tests/                   Playwright specs; tests/gifts/ holds the gifts API and page tests
 ```
 
 ## Design notes

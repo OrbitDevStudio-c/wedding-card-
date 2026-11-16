@@ -1,5 +1,5 @@
 import { memo, startTransition, useCallback, useEffect, useState } from 'react';
-import { music as musicConfig } from './config.js';
+import { gifts, music as musicConfig } from './config.js';
 import { FloatingControls } from './components/FloatingControls.jsx';
 import { PetalLayer } from './components/PetalLayer.jsx';
 import { useGuestName } from './hooks/useGuestName.js';
@@ -10,6 +10,7 @@ import { DateReveal } from './sections/DateReveal.jsx';
 import { Events } from './sections/Events.jsx';
 import { Footer } from './sections/Footer.jsx';
 import { Gallery } from './sections/Gallery.jsx';
+import { GiftsTeaser } from './sections/GiftsTeaser.jsx';
 import { Hero } from './sections/Hero.jsx';
 import { Intro } from './sections/Intro.jsx';
 import { Rsvp } from './sections/Rsvp.jsx';
@@ -18,7 +19,20 @@ import { Travel } from './sections/Travel.jsx';
 import { Venue } from './sections/Venue.jsx';
 
 // Memoised so opening the doors re-renders none of them; the open state is pure CSS (.site.is-open)
-const SECTIONS = Object.entries({ Hero, Story, DateReveal, Countdown, Venue, Events, Gallery, Travel, Rsvp, Blessings }).map(
+// Wedding Gifts sits between Travel & Stay and the RSVP, and disappears when gifts are disabled.
+const SECTIONS = Object.entries({
+  Hero,
+  Story,
+  DateReveal,
+  Countdown,
+  Venue,
+  Events,
+  Gallery,
+  Travel,
+  ...(gifts.enabled && { GiftsTeaser }),
+  Rsvp,
+  Blessings,
+}).map(
   ([key, Section]) => [key, memo(Section)],
 );
 const LAST_STAGE = SECTIONS.length + 1; // every section, then the footer

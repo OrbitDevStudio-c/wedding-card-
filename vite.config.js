@@ -38,8 +38,14 @@ function seoFromConfig(mode) {
   };
 }
 
+// The browser always calls same-origin /api, so the couple's session cookie stays first-party.
+// Locally Vite forwards it to the API server; in production the host rewrites it (see README).
+const apiProxy = { '/api': { target: process.env.API_PROXY_TARGET || 'http://127.0.0.1:4000', changeOrigin: false } };
+
 export default defineConfig(({ mode }) => ({
   plugins: [react(), seoFromConfig(mode)],
+  server: { proxy: apiProxy },
+  preview: { proxy: apiProxy },
   build: {
     target: 'es2020',
     cssCodeSplit: true,

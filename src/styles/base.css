@@ -371,3 +371,9 @@ h4,
     transform: none;
   }
 }
+
+/* Shown for a moment while a code-split page (gifts, couple dashboard) loads */
+.page-loading {
+  min-height: 100svh;
+  background: var(--emerald-900);
+}
