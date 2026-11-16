@@ -52,11 +52,6 @@ const items = {
     `<ellipse cx="300" cy="330" rx="160" ry="62"/><ellipse cx="300" cy="322" rx="105" ry="38" stroke="${GOLD}"/><ellipse cx="300" cy="318" rx="60" ry="20"/>
      <path d="M120 250v120M110 250v35a10 10 0 0 0 20 0v-35M480 250c18 0 22 40 0 50v70"/>`,
   ],
-  spa: [
-    'Spa day',
-    `<path d="M300 420c-60-40-70-110-0-190 70 80 60 150 0 190z"/><path d="M300 420c-70 0-130-40-150-110 70-5 130 40 150 110zM300 420c70 0 130-40 150-110-70-5-130 40-150 110z"/>
-     <path d="M300 420V300" stroke="${GOLD}"/><path d="M180 455h240" stroke="${GOLD}"/>`,
-  ],
 };
 
 const scene = (title, body, sky = ['#0b2b27', '#1e6458']) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="${title}">
@@ -80,13 +75,16 @@ const dreams = {
      <path d="M120 640h960M200 640c0-60 30-90 30-90s30 30 30 90M980 640c0-70 35-100 35-100s35 30 35 100" stroke-opacity=".7"/>`,
     ['#0f3b35', '#165047'],
   ),
-  'dream-anniversary': scene(
-    'Two people under an umbrella in the rain',
-    `<path d="M420 360a180 180 0 0 1 360 0z"/><path d="M420 360c30-25 60-25 90 0 30-25 60-25 90 0 30-25 60-25 90 0 30-25 60-25 90 0"/>
-     <path d="M600 180v-20M600 360v200a25 25 0 0 1-50 0"/><circle cx="520" cy="450" r="26"/><circle cx="680" cy="450" r="26"/>
-     <path d="M520 476v130M680 476v130M490 530h60M650 530h60"/>
-     ${Array.from({ length: 26 }, (_, i) => `<path d="M${60 + (i * 47) % 1100} ${80 + ((i * 131) % 600)}l-10 26" stroke-opacity=".45"/>`).join('')}`,
-    ['#061b18', '#0f3b35'],
+  'dream-car': scene(
+    'A sports coupe on an open road',
+    `<circle cx="960" cy="190" r="60"/>
+     <path d="M0 640h1200" stroke-opacity=".5"/><path d="M80 700h220M420 700h220M760 700h220" stroke-opacity=".35"/>
+     <path d="M230 560c0-40 20-58 60-66l120-22c60-50 130-82 230-82 90 0 150 30 210 84l110 18c45 8 70 30 70 68v20H230z"/>
+     <path d="M440 470c50-42 110-62 200-62 70 0 120 22 165 62z" stroke-opacity=".8"/><path d="M640 410v60"/>
+     <path d="M880 470h70M250 540h50M960 540h50" stroke-opacity=".7"/><path d="M1010 500l40-6" stroke-width="6"/>
+     <circle cx="380" cy="580" r="58"/><circle cx="380" cy="580" r="24"/><circle cx="880" cy="580" r="58"/><circle cx="880" cy="580" r="24"/>
+     <path d="M90 520h110M60 560h120M110 600h80" stroke-opacity=".45"/>`,
+    ['#061b18', '#165047'],
   ),
 };
 

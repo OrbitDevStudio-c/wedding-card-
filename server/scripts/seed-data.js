@@ -48,14 +48,6 @@ export const sampleGifts = [
     purchaseUrl: '',
     category: 'home',
   },
-  {
-    name: 'Couples Spa Day',
-    description: 'One slow afternoon, after all the wedding planning.',
-    image: '/gifts/spa.svg',
-    estimatedPrice: 14000,
-    purchaseUrl: '',
-    category: 'experiences',
-  },
 ];
 
 export const sampleDreams = [
@@ -76,11 +68,11 @@ export const sampleDreams = [
     offlineAmount: 120000,
   },
   {
-    slug: 'first-anniversary-trip',
-    title: 'Our First Anniversary Trip',
-    description: 'Back to where it all began: a monsoon weekend in Mumbai, one year on.',
-    image: '/gifts/dream-anniversary.svg',
-    targetAmount: 75000,
-    offlineAmount: 18000,
+    slug: 'bmw-m4-csl',
+    title: 'Our BMW M4 CSL',
+    description: 'Open roads, mountain passes and long drives with the windows down. The car we keep stopping to look at, and someday our first one together.',
+    image: '/gifts/dream-car.svg',
+    targetAmount: 19000000,
+    offlineAmount: 0,
   },
 ];

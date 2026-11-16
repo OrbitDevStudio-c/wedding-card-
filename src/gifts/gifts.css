@@ -221,19 +221,21 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
-  margin-top: var(--space-5);
+  max-width: 21rem;
+  margin: var(--space-5) auto 0;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 560px) {
   .gift-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 40rem;
   }
 }
 
 @media (min-width: 1024px) {
   .gift-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-4);
+    max-width: 58rem;
   }
 }
 
@@ -255,7 +257,7 @@
 }
 
 .gift-card--skeleton {
-  min-height: 26rem;
+  min-height: 22rem;
   background: linear-gradient(100deg, var(--ivory-50) 30%, var(--ivory-200) 50%, var(--ivory-50) 70%) 0 0 / 300% 100%;
   animation: shimmer 1.6s linear infinite;
 }
@@ -267,12 +269,12 @@
 }
 
 .gift-card__frame {
-  padding: var(--space-2) var(--space-2) 0;
+  padding: 12px 12px 0;
 }
 
 .gift-card__img {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 5 / 4;
   object-fit: cover;
   border-radius: var(--radius-arch);
   background: var(--ivory-100);
@@ -291,8 +293,8 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-3);
+  gap: var(--space-half);
+  padding: var(--space-2) var(--space-2) var(--space-3);
   text-align: center;
 }
 
@@ -303,14 +305,14 @@
 .gift-card__name {
   font-family: var(--font-serif);
   font-weight: 600;
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
   line-height: 1.2;
   color: var(--emerald-800);
 }
 
 .gift-card__desc {
   color: var(--ink-soft);
-  font-size: 1.0625rem;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
@@ -319,7 +321,7 @@
   padding-top: var(--space-1);
   font-family: var(--font-serif);
   font-weight: 600;
-  font-size: var(--text-md);
+  font-size: 1.1875rem;
   color: var(--ink);
 }
 

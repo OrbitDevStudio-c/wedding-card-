@@ -88,17 +88,19 @@ export default function GiftsPage({ path }) {
 
 function Unavailable({ guest, error }) {
   const home = withGuest('/', guest);
+  // Network failure or server/proxy error: say so and offer a retry, rather than "not open".
+  const unreachable = Boolean(error) && (error.status === 0 || error.status >= 500);
   return (
     <section className="section tone-parchment gifts-message">
       <div className="container container--narrow">
         <h1 className="script gifts-message__title">Wedding Gifts</h1>
         <p className="lede">
-          {error?.status === 0
+          {unreachable
             ? 'We could not load the gift page just now. Please check your connection and try again.'
             : 'The gift page is not open at the moment. Your presence is the only gift we need.'}
         </p>
         <div className="button-row">
-          {error?.status === 0 && (
+          {unreachable && (
             <button type="button" className="button" onClick={() => window.location.reload()}>
               Try again
             </button>
