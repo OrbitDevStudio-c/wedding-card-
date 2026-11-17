@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { gifts as giftsConfig } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
 import { SectionHeading } from '../components/SectionHeading.jsx';
+import { RoyalElephant } from '../components/Painted.jsx';
 import { api, formatINR } from '../lib/api.js';
 import { linkHandler, withGuest } from '../lib/router.js';
 import { WEDDING } from './GiftsPage.jsx';
 
 export function DreamProgress({ dream }) {
+  const { t, pick } = useI18n();
   return (
     <div className="dream-progress">
       <div
@@ -14,13 +16,13 @@ export function DreamProgress({ dream }) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={dream.progress}
-        aria-label={`${dream.title}: ${dream.progress}% of the goal`}
+        aria-label={t('dream.progress', { title: pick(dream, 'title'), pct: dream.progress })}
       >
         <span className="dream-progress__fill" style={{ '--progress': `${dream.progress}%` }} />
       </div>
       <p className="dream-progress__numbers">
         <span>
-          <strong>{formatINR(dream.raisedAmount)}</strong> of {formatINR(dream.targetAmount)}
+          <strong>{formatINR(dream.raisedAmount)}</strong> {t('dream.of')} {formatINR(dream.targetAmount)}
         </span>
         <span className="dream-progress__pct">{dream.progress}%</span>
       </p>
@@ -29,6 +31,7 @@ export function DreamProgress({ dream }) {
 }
 
 export function Dreams({ guest }) {
+  const { t, pick, content, errorText } = useI18n();
   const [state, setState] = useState({ status: 'loading', dreams: [] });
 
   useEffect(() => {
@@ -40,17 +43,18 @@ export function Dreams({ guest }) {
   }, []);
 
   if (state.status === 'ready' && !state.dreams.length) return null;
-  const { dreams } = giftsConfig;
+  const { dreams } = content.gifts;
 
   return (
     <section className="section tone-ivory dreams" id="dreams" aria-labelledby="dreams-title">
       <div className="container">
+        <RoyalElephant className="dreams__elephant" />
         <SectionHeading id="dreams-title" eyebrow={dreams.eyebrow} title={dreams.title}>
           {dreams.intro}
         </SectionHeading>
         {state.status === 'error' && (
           <p className="gifts-empty lede" role="alert">
-            {state.error.message}
+            {errorText(state.error)}
           </p>
         )}
         {state.status === 'loading' && <div className="dream-grid dream-grid--loading" aria-hidden="true" />}
@@ -66,11 +70,12 @@ export function Dreams({ guest }) {
                     )}
                   </div>
                   <div className="dream-card__body">
-                    <h3 className="dream-card__title">{dream.title}</h3>
-                    {dream.description && <p className="dream-card__desc">{dream.description}</p>}
+                    <h3 className="dream-card__title">{pick(dream, 'title')}</h3>
+                    {dream.description && <p className="dream-card__desc">{pick(dream, 'description')}</p>}
                     <DreamProgress dream={dream} />
                     <a className="button" href={href} onClick={linkHandler(href)}>
-                      Contribute<span className="visually-hidden"> to {dream.title}</span>
+                      {t('dream.contribute')}
+                      <span className="visually-hidden"> {t('dream.contributeTo', { title: pick(dream, 'title') })}</span>
                     </a>
                   </div>
                 </li>

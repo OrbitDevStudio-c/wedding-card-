@@ -7,6 +7,7 @@ export const sampleGifts = [
     estimatedPrice: 35000,
     purchaseUrl: 'https://www.apple.com/in/watch/',
     category: 'electronics',
+    translations: { gu: { name: 'Apple Watch Series', description: 'તળાવ કિનારે રુશિલની સવારની દોડ અને એલિકાના રોજના ક્યારેય પૂરા ન થતા સ્ટેપ-લક્ષ્ય માટે.' } },
   },
   {
     name: 'Nike Running Sneakers',
@@ -15,6 +16,7 @@ export const sampleGifts = [
     estimatedPrice: 12000,
     purchaseUrl: 'https://www.nike.com/in/',
     category: 'fashion',
+    translations: { gu: { name: 'Nike રનિંગ શૂઝ', description: 'સાથે દોડવાનું વચન આપનાર યુગલ માટે એકસરખી જોડી.' } },
   },
   {
     name: 'Sony Noise-Cancelling Headphones',
@@ -23,6 +25,7 @@ export const sampleGifts = [
     estimatedPrice: 25000,
     purchaseUrl: 'https://www.sony.co.in/',
     category: 'electronics',
+    translations: { gu: { name: 'Sony નોઇઝ-કેન્સલિંગ હેડફોન', description: 'લાંબી ફ્લાઇટ્સ, એથીય લાંબી પ્લેલિસ્ટ, અને જરૂર પડે ત્યારે થોડી શાંતિ.' } },
   },
   {
     name: 'Espresso Coffee Machine',
@@ -31,6 +34,7 @@ export const sampleGifts = [
     estimatedPrice: 18000,
     purchaseUrl: '',
     category: 'home',
+    translations: { gu: { name: 'એસ્પ્રેસો કૉફી મશીન', description: 'અમારા નવા ઘરની દરેક સુંદર સવાર એક સરસ કપ કૉફીથી શરૂ થશે.' } },
   },
   {
     name: 'Perfume Collection',
@@ -39,6 +43,7 @@ export const sampleGifts = [
     estimatedPrice: 15000,
     purchaseUrl: '',
     category: 'lifestyle',
+    translations: { gu: { name: 'પરફ્યુમ કલેક્શન', description: 'લગ્નની મોસમ યાદ રાખવા માટે ખાસ સુગંધોનો સેટ.' } },
   },
   {
     name: 'Premium Dinner Set',
@@ -47,6 +52,7 @@ export const sampleGifts = [
     estimatedPrice: 10000,
     purchaseUrl: '',
     category: 'home',
+    translations: { gu: { name: 'પ્રીમિયમ ડિનર સેટ', description: 'બંને પરિવારો સાથેના અમારા પહેલા દિવાળીના ભોજન માટે સુંદર પોર્સેલિન.' } },
   },
 ];
 
@@ -58,6 +64,7 @@ export const sampleDreams = [
     image: '/gifts/dream-alps.svg',
     targetAmount: 200000,
     offlineAmount: 85000,
+    translations: { gu: { title: 'અમારું સ્વિત્ઝર્લેન્ડ હનીમૂન', description: 'આલ્પ્સ પર બરફ, પર્વતો વચ્ચેથી ગ્લેશિયર ટ્રેન, અને લ્યુસર્નમાં હૉટ ચૉકલેટ. પહેલી મુલાકાતથી જેની વાત કરતાં આવ્યાં છીએ તે સફર.' } },
   },
   {
     slug: 'dream-home',
@@ -66,6 +73,7 @@ export const sampleDreams = [
     image: '/gifts/dream-home.svg',
     targetAmount: 500000,
     offlineAmount: 120000,
+    translations: { gu: { title: 'અમારું સપનાનું ઘર', description: 'છોડથી ભરેલી નાનકડી બાલ્કની, પુસ્તકોનું મોટું કબાટ, અને એવું રસોડું જ્યાં સૌનું સ્વાગત હોય.' } },
   },
   {
     slug: 'bmw-m4-csl',
@@ -74,5 +82,6 @@ export const sampleDreams = [
     image: '/gifts/dream-car.svg',
     targetAmount: 19000000,
     offlineAmount: 0,
+    translations: { gu: { title: 'અમારી BMW M4 CSL', description: 'ખુલ્લા રસ્તા, પર્વતીય ઘાટ અને બારીઓ ખુલ્લી રાખીને લાંબી સફર. જે કાર જોઈને અમે હંમેશાં ઊભાં રહી જઈએ છીએ, અને એક દિવસ સાથે મળીને અમારી પહેલી કાર બનશે.' } },
   },
 ];

@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { photos, story } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
 import { Picture } from '../components/Picture.jsx';
 import { Reveal } from '../components/Reveal.jsx';
 import { SectionHeading } from '../components/SectionHeading.jsx';
@@ -7,13 +7,15 @@ import { useInView } from '../hooks/useInView.js';
 import './Story.css';
 
 export function Story() {
+  const { t, content } = useI18n();
+  const { photos, story } = content;
   const listRef = useRef(null);
   const drawn = useInView(listRef, { rootMargin: '0px 0px -30% 0px' });
 
   return (
     <section className="section tone-parchment story" id="story" aria-labelledby="story-title">
       <div className="container">
-        <SectionHeading id="story-title" eyebrow="Chapter by chapter" title="Our Story" />
+        <SectionHeading id="story-title" eyebrow={t('story.eyebrow')} title={t('story.title')} />
         <ol ref={listRef} className={`story__list ${drawn ? 'is-drawn' : ''}`}>
           {story.map((item, i) => {
             const photo = photos.story[item.photo];

@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
-import { gifts as giftsConfig } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
 import { api, formatINR } from '../lib/api.js';
 import { petals } from '../lib/petals.js';
+import { LotusDivider } from '../components/Painted.jsx';
 import { WEDDING } from './GiftsPage.jsx';
 import { Modal } from './Modal.jsx';
 
 const MESSAGE_MAX = 500;
 const PHONE_RE = /^\+?[0-9 ()-]{7,20}$/;
 
+// Errors are message keys, translated when shown, so they follow a language switch.
 function validate(v) {
   const errors = {};
-  if (v.guestName.trim().length < 2) errors.guestName = 'Please enter your name.';
-  if (v.guestPhone.trim() && !PHONE_RE.test(v.guestPhone.trim())) errors.guestPhone = 'Please enter a valid phone number.';
-  if (v.message.length > MESSAGE_MAX) errors.message = `Please keep your message under ${MESSAGE_MAX} characters.`;
+  if (v.guestName.trim().length < 2) errors.guestName = 'reserve.err.name';
+  if (v.guestPhone.trim() && !PHONE_RE.test(v.guestPhone.trim())) errors.guestPhone = 'reserve.err.phone';
+  if (v.message.length > MESSAGE_MAX) errors.message = 'reserve.err.message';
   return errors;
 }
 
@@ -31,6 +33,8 @@ export function ReserveDialog({ gift, guest, onClose, onReserved }) {
 }
 
 function ReserveForm({ gift, guest, onReserved }) {
+  const { t, pick, content, errorText } = useI18n();
+  const name = pick(gift, 'name');
   const [values, setValues] = useState({ guestName: guest || '', guestPhone: '', message: '', website: '' });
   const [submitted, setSubmitted] = useState(false);
   const [status, setStatus] = useState('idle'); // idle | sending | success | taken | error
@@ -39,8 +43,13 @@ function ReserveForm({ gift, guest, onReserved }) {
   const formRef = useRef(null);
   const successRef = useRef(null);
 
-  const errors = { ...validate(values), ...serverFields };
-  const shown = (f) => (submitted ? errors[f] : undefined);
+  const clientErrors = validate(values);
+  // Client errors are keys; errors the server returned for a field are shown as sent.
+  const shown = (f) => {
+    if (!submitted) return undefined;
+    if (clientErrors[f]) return t(clientErrors[f], { max: MESSAGE_MAX });
+    return serverFields[f];
+  };
   const set = (f) => (e) => {
     setValues((v) => ({ ...v, [f]: e.target.value }));
     // Drop the server's error for this field (deleting, not setting undefined, so the
@@ -63,7 +72,6 @@ function ReserveForm({ gift, guest, onReserved }) {
   const onSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
-    const clientErrors = validate(values);
     const first = ['guestName', 'guestPhone', 'message'].find((f) => clientErrors[f]);
     if (first) {
       formRef.current.querySelector(`#reserve-${first}`)?.focus();
@@ -86,17 +94,17 @@ function ReserveForm({ gift, guest, onReserved }) {
     } catch (err) {
       if (err.code === 'already_reserved' || err.code === 'unavailable' || err.status === 404) {
         setStatus('taken');
-        setServerError(err.message);
+        setServerError(t(err.code === 'already_reserved' ? 'reserve.taken' : 'reserve.unavailable'));
         onReserved();
       } else {
         setStatus('error');
         setServerFields(err.fields || {});
-        setServerError(err.message);
+        setServerError(errorText(err));
       }
     }
   };
 
-  const { reservation } = giftsConfig;
+  const { reservation } = content.gifts;
 
   if (status === 'success') {
     return (
@@ -110,17 +118,18 @@ function ReserveForm({ gift, guest, onReserved }) {
         </h2>
         <p className="reserve__success-text">{reservation.successText}</p>
         <p className="reserve__gift-name">
-          <span className="label">Your gift</span>
-          {gift.name}
+          <span className="label">{t('reserve.yourGift')}</span>
+          {name}
         </p>
         <div className="button-row">
           {gift.purchaseUrl && (
             <a className="button" href={gift.purchaseUrl} target="_blank" rel="noopener noreferrer nofollow">
-              Shop for this gift<span className="visually-hidden"> (opens in a new tab)</span>
+              {t('reserve.shop')}
+              <span className="visually-hidden"> {t('common.newTab')}</span>
             </a>
           )}
           <form method="dialog">
-            <button className="button button--ghost">Back to the wishlist</button>
+            <button className="button button--ghost">{t('reserve.back')}</button>
           </form>
         </div>
       </div>
@@ -131,11 +140,11 @@ function ReserveForm({ gift, guest, onReserved }) {
     return (
       <div className="reserve__success" role="alert">
         <h2 id="reserve-title" className="script reserve__success-title">
-          Just missed it
+          {t('reserve.takenTitle')}
         </h2>
         <p className="reserve__success-text">{serverError}</p>
         <form method="dialog" className="button-row">
-          <button className="button">Choose another gift</button>
+          <button className="button">{t('reserve.chooseAnother')}</button>
         </form>
       </div>
     );
@@ -143,20 +152,25 @@ function ReserveForm({ gift, guest, onReserved }) {
 
   return (
     <form ref={formRef} className="reserve__form" onSubmit={onSubmit} noValidate>
+      <LotusDivider className="reserve__divider" />
       <div className="reserve__gift">
         {gift.image && <img src={gift.image} alt="" width="96" height="96" />}
         <div>
-          <p className="label reserve__eyebrow">Reserve this gift</p>
+          <p className="label reserve__eyebrow">{t('reserve.eyebrow')}</p>
           <h2 id="reserve-title" className="reserve__title">
-            {gift.name}
+            {name}
           </h2>
-          {gift.estimatedPrice > 0 && <p className="reserve__price">Approx. {formatINR(gift.estimatedPrice)}</p>}
+          {gift.estimatedPrice > 0 && (
+            <p className="reserve__price">
+              {t('gift.approx')} {formatINR(gift.estimatedPrice)}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="field">
         <label className="label field__label" htmlFor="reserve-guestName">
-          Your name
+          {t('reserve.name')}
         </label>
         <input
           {...fieldProps('guestName')}
@@ -175,7 +189,7 @@ function ReserveForm({ gift, guest, onReserved }) {
 
       <div className="field">
         <label className="label field__label" htmlFor="reserve-guestPhone">
-          Phone <span className="field__optional">(optional)</span>
+          {t('reserve.phone')} <span className="field__optional">{t('reserve.optional')}</span>
         </label>
         <input
           {...fieldProps('guestPhone')}
@@ -194,7 +208,7 @@ function ReserveForm({ gift, guest, onReserved }) {
 
       <div className="field">
         <label className="label field__label" htmlFor="reserve-message">
-          A note for the couple <span className="field__optional">(optional)</span>
+          {t('reserve.note')} <span className="field__optional">{t('reserve.optional')}</span>
         </label>
         <textarea
           {...fieldProps('message')}
@@ -230,7 +244,7 @@ function ReserveForm({ gift, guest, onReserved }) {
       )}
 
       <button type="submit" className="button reserve__submit" disabled={status === 'sending'} aria-busy={status === 'sending'}>
-        {status === 'sending' ? 'Reserving…' : 'Confirm Gift Reservation'}
+        {status === 'sending' ? t('reserve.sending') : t('reserve.submit')}
       </button>
     </form>
   );

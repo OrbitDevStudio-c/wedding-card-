@@ -37,6 +37,7 @@ const giftView = (g, reservation) => ({
   category: g.category,
   isActive: g.is_active,
   displayOrder: g.display_order,
+  translations: g.translations || {},
   reservation: reservation ? reservationView(reservation) : null,
 });
 
@@ -73,6 +74,7 @@ const GIFT_COLUMNS = {
   purchaseUrl: 'purchase_url',
   category: 'category',
   isActive: 'is_active',
+  translations: 'translations',
 };
 
 const DREAM_COLUMNS = {
@@ -83,6 +85,7 @@ const DREAM_COLUMNS = {
   targetAmount: 'target_amount',
   offlineAmount: 'offline_amount',
   isActive: 'is_active',
+  translations: 'translations',
 };
 
 coupleRouter.get('/me', (req, res) => {
@@ -124,10 +127,10 @@ coupleRouter.get('/gifts', async (req, res) => {
 coupleRouter.post('/gifts', async (req, res) => {
   const d = validate(req.body, giftRules);
   const g = await one(
-    `INSERT INTO gifts (wedding_id, name, description, image, estimated_price, purchase_url, category, is_active, display_order)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (SELECT COALESCE(MAX(display_order) + 1, 0) FROM gifts WHERE wedding_id = $1))
+    `INSERT INTO gifts (wedding_id, name, description, image, estimated_price, purchase_url, category, is_active, translations, display_order)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, (SELECT COALESCE(MAX(display_order) + 1, 0) FROM gifts WHERE wedding_id = $1))
      RETURNING *`,
-    [req.weddingId, d.name, d.description, d.image, d.estimatedPrice, d.purchaseUrl, d.category, d.isActive],
+    [req.weddingId, d.name, d.description, d.image, d.estimatedPrice, d.purchaseUrl, d.category, d.isActive, d.translations],
   );
   res.status(201).json({ gift: giftView(g) });
 });
@@ -245,9 +248,9 @@ coupleRouter.post('/dreams', async (req, res) => {
   d.slug = d.slug || slugify(d.title);
   if (!d.slug || d.slug.length < 2) throw new HttpError(400, 'validation', 'Please check the highlighted fields.', { slug: 'Please choose a link.' });
   const dream = await one(
-    `INSERT INTO dreams (wedding_id, slug, title, description, image, target_amount, offline_amount, is_active, display_order)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (SELECT COUNT(*) FROM dreams WHERE wedding_id = $1)) RETURNING *`,
-    [req.weddingId, d.slug, d.title, d.description, d.image, d.targetAmount, d.offlineAmount, d.isActive],
+    `INSERT INTO dreams (wedding_id, slug, title, description, image, target_amount, offline_amount, is_active, translations, display_order)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, (SELECT COUNT(*) FROM dreams WHERE wedding_id = $1)) RETURNING *`,
+    [req.weddingId, d.slug, d.title, d.description, d.image, d.targetAmount, d.offlineAmount, d.isActive, d.translations],
   ).catch(slugTaken);
   res.status(201).json({ dream: privateDream(dream, new Map()) });
 });

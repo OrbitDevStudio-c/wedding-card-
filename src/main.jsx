@@ -6,6 +6,7 @@ import { StrictMode, Suspense, lazy } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import { gifts } from './config.js';
+import { LanguageProvider, initialLang, loadLanguage } from './i18n/index.jsx';
 import { usePath } from './lib/router.js';
 
 // The gifts page and the couple dashboard are separate chunks, so the invitation never
@@ -40,8 +41,16 @@ function Root() {
   return <App />;
 }
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <Root />
-  </StrictMode>,
-);
+function render() {
+  createRoot(document.getElementById('root')).render(
+    <StrictMode>
+      <LanguageProvider>
+        <Root />
+      </LanguageProvider>
+    </StrictMode>,
+  );
+}
+
+// A returning Gujarati guest gets the Gujarati pack before the first paint; if it cannot load,
+// the page simply renders in English.
+loadLanguage(initialLang()).catch(() => {}).finally(render);

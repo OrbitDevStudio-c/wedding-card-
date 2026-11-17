@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { events, rsvp, venue } from '../config.js';
+import { events as baseEvents, rsvp } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { Reveal } from '../components/Reveal.jsx';
+import { FloralCorner } from '../components/Painted.jsx';
 import { SectionHeading } from '../components/SectionHeading.jsx';
 import { googleCalendarUrl } from '../lib/calendar.js';
 import { petals } from '../lib/petals.js';
@@ -12,24 +14,33 @@ const STORAGE_KEY = 'rsvp-response';
 const MESSAGE_MAX = 500;
 const FIELD_ORDER = ['name', 'phone', 'attending', 'guests', 'events', 'message'];
 
+// Errors are message keys (translated when shown), so switching language re-words them in place.
 function validate(v) {
   const errors = {};
-  if (v.name.trim().length < 2) errors.name = 'Please enter your full name.';
+  if (v.name.trim().length < 2) errors.name = ['rsvp.err.name'];
   const digits = v.phone.replace(/\D/g, '');
-  if (!digits) errors.phone = 'Please enter your phone number.';
-  else if (digits.length < 10 || digits.length > 13) errors.phone = 'Please enter a valid 10-digit phone number.';
-  if (!v.attending) errors.attending = 'Please let us know if you can make it.';
+  if (!digits) errors.phone = ['rsvp.err.phoneMissing'];
+  else if (digits.length < 10 || digits.length > 13) errors.phone = ['rsvp.err.phone'];
+  if (!v.attending) errors.attending = ['rsvp.err.attending'];
   if (v.attending === 'yes') {
-    if (!(v.guests >= 1 && v.guests <= rsvp.maxGuests)) errors.guests = `Choose between 1 and ${rsvp.maxGuests} guests.`;
-    if (!v.events.length) errors.events = 'Pick at least one celebration.';
+    if (!(v.guests >= 1 && v.guests <= rsvp.maxGuests)) errors.guests = ['rsvp.err.guests', { max: rsvp.maxGuests }];
+    if (!v.events.length) errors.events = ['rsvp.err.events'];
   }
-  if (v.message.length > MESSAGE_MAX) errors.message = `Please keep your message under ${MESSAGE_MAX} characters.`;
+  if (v.message.length > MESSAGE_MAX) errors.message = ['rsvp.err.message', { max: MESSAGE_MAX }];
   return errors;
 }
 
+// Celebrations are stored by id so the choice survives a language switch. Responses saved by
+// an earlier version stored English names, which are mapped back to ids here.
 function readSaved() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved?.values?.events) {
+      saved.values.events = saved.values.events
+        .map((e) => baseEvents.find((ev) => ev.id === e || ev.name === e)?.id)
+        .filter(Boolean);
+    }
+    return saved;
   } catch {
     return null;
   }
@@ -44,6 +55,7 @@ function FieldError({ id, message }) {
 }
 
 function Success({ values, onEdit }) {
+  const { t, content } = useI18n();
   const headingRef = useRef(null);
   const first = values.name.trim().split(' ')[0];
   const coming = values.attending === 'yes';
@@ -61,22 +73,25 @@ function Success({ values, onEdit }) {
         <path d="M19 33l9 9 17-19" pathLength="1" />
       </svg>
       <h3 ref={headingRef} tabIndex={-1} className="script rsvp__success-title">
-        Thank you, {first}!
+        {t('rsvp.thanks', { name: first })}
       </h3>
       <p className="rsvp__success-text">
         {coming
-          ? `Your RSVP is in. We can't wait to celebrate with ${values.guests > 1 ? `your party of ${values.guests}` : 'you'} in ${venue.city.split(',')[0]}.`
-          : "We'll miss you dearly, and we're grateful for your blessings from afar."}
+          ? t('rsvp.thanksYes', {
+              who: values.guests > 1 ? t('rsvp.thanksYesParty', { n: values.guests }) : t('rsvp.thanksYesYou'),
+              city: content.venue.city.split(',')[0],
+            })
+          : t('rsvp.thanksNo')}
       </p>
       <div className="button-row">
         {coming && (
           <a className="button" href={googleCalendarUrl()} target="_blank" rel="noopener noreferrer">
             <Icon name="calendar" />
-            Add to calendar
+            {t('rsvp.addCalendar')}
           </a>
         )}
         <button type="button" className="button button--ghost" onClick={onEdit}>
-          Edit my response
+          {t('rsvp.edit')}
         </button>
       </div>
     </div>
@@ -84,6 +99,8 @@ function Success({ values, onEdit }) {
 }
 
 export function Rsvp({ guest }) {
+  const { t, content } = useI18n();
+  const { events } = content;
   const [saved] = useState(readSaved);
   const [values, setValues] = useState(
     () => saved?.values ?? { name: guest, phone: '', attending: '', guests: 1, events: [], message: '' },
@@ -95,7 +112,10 @@ export function Rsvp({ guest }) {
   const formRef = useRef(null);
 
   const errors = validate(values);
-  const visibleError = (field) => (submitted || touched[field] ? errors[field] : undefined);
+  const visibleError = (field) => {
+    const e = submitted || touched[field] ? errors[field] : undefined;
+    return e ? t(e[0], e[1]) : undefined;
+  };
 
   const set = (field, value) => setValues((v) => ({ ...v, [field]: value }));
   const blur = (field) => () => setTouched((t) => ({ ...t, [field]: true }));
@@ -114,11 +134,11 @@ export function Rsvp({ guest }) {
     setSubmitted(true);
     const invalid = FIELD_ORDER.filter((f) => errors[f]);
     if (invalid.length) {
-      setAnnounce(`Please check ${invalid.length === 1 ? 'one field' : `${invalid.length} fields`} before sending.`);
+      setAnnounce(t('rsvp.announceInvalid', { count: invalid.length === 1 ? t('rsvp.oneField') : t('rsvp.fields', { n: invalid.length }) }));
       formRef.current.querySelector(`[data-field="${invalid[0]}"]`)?.focus();
       return;
     }
-    setAnnounce('Sending your RSVP…');
+    setAnnounce(t('rsvp.announceSending'));
     setStatus('sending');
     try {
       await submitRsvp(values);
@@ -140,18 +160,20 @@ export function Rsvp({ guest }) {
   return (
     <section className="section tone-parchment rsvp" id="rsvp" aria-labelledby="rsvp-title">
       <div className="container container--narrow">
-        <SectionHeading id="rsvp-title" eyebrow={`Kindly reply by ${rsvp.deadline}`} title="Will You Join Us?">
-          Your presence is the greatest gift. Let us know so we can save you a seat.
+        <SectionHeading id="rsvp-title" eyebrow={t('rsvp.eyebrow', { date: content.rsvp.deadline })} title={t('rsvp.title')}>
+          {t('rsvp.lede')}
         </SectionHeading>
 
         <Reveal className="rsvp__card">
+          <FloralCorner className="rsvp__corner rsvp__corner--tl" />
+          <FloralCorner className="rsvp__corner rsvp__corner--br" />
           {status === 'success' ? (
             <Success values={values} onEdit={() => setStatus('idle')} />
           ) : (
             <form ref={formRef} className="rsvp__form" onSubmit={onSubmit} noValidate aria-busy={status === 'sending'}>
               <div className="field">
                 <label className="label field__label" htmlFor="rsvp-name">
-                  Full name <span aria-hidden="true">*</span>
+                  {t('rsvp.name')} <span aria-hidden="true">*</span>
                 </label>
                 <input
                   {...fieldProps('name')}
@@ -163,14 +185,14 @@ export function Rsvp({ guest }) {
                   value={values.name}
                   onChange={(e) => set('name', e.target.value)}
                   onBlur={blur('name')}
-                  placeholder="e.g. Priya Sharma"
+                  placeholder={t('rsvp.namePlaceholder')}
                 />
                 <FieldError id="rsvp-name-error" message={visibleError('name')} />
               </div>
 
               <div className="field">
                 <label className="label field__label" htmlFor="rsvp-phone">
-                  Phone number <span aria-hidden="true">*</span>
+                  {t('rsvp.phone')} <span aria-hidden="true">*</span>
                 </label>
                 <input
                   {...fieldProps('phone')}
@@ -190,12 +212,12 @@ export function Rsvp({ guest }) {
 
               <fieldset className="field" aria-describedby={visibleError('attending') ? 'rsvp-attending-error' : undefined}>
                 <legend className="label field__label">
-                  Will you attend? <span aria-hidden="true">*</span>
+                  {t('rsvp.attend')} <span aria-hidden="true">*</span>
                 </legend>
                 <div className="choices">
                   {[
-                    ['yes', 'Joyfully accept', "Wouldn't miss it"],
-                    ['no', 'Regretfully decline', 'Celebrating from afar'],
+                    ['yes', t('rsvp.yes'), t('rsvp.yesSub')],
+                    ['no', t('rsvp.no'), t('rsvp.noSub')],
                   ].map(([value, title, sub], i) => (
                     <label key={value} className="choice">
                       <input
@@ -223,7 +245,7 @@ export function Rsvp({ guest }) {
                 <div className="rsvp__extra">
                   <div className="field">
                     <label className="label field__label" htmlFor="rsvp-guests">
-                      Guests, including you
+                      {t('rsvp.guests')}
                     </label>
                     <div className="stepper">
                       <button
@@ -231,7 +253,7 @@ export function Rsvp({ guest }) {
                         className="stepper__button"
                         onClick={() => set('guests', Math.max(1, values.guests - 1))}
                         disabled={values.guests <= 1}
-                        aria-label="Remove a guest"
+                        aria-label={t('rsvp.removeGuest')}
                       >
                         <Icon name="minus" />
                       </button>
@@ -252,7 +274,7 @@ export function Rsvp({ guest }) {
                         className="stepper__button"
                         onClick={() => set('guests', Math.min(rsvp.maxGuests, values.guests + 1))}
                         disabled={values.guests >= rsvp.maxGuests}
-                        aria-label="Add a guest"
+                        aria-label={t('rsvp.addGuest')}
                       >
                         <Icon name="plus" />
                       </button>
@@ -262,7 +284,7 @@ export function Rsvp({ guest }) {
 
                   <fieldset className="field" aria-describedby={visibleError('events') ? 'rsvp-events-error' : undefined}>
                     <legend className="label field__label">
-                      Which celebrations will you join? <span aria-hidden="true">*</span>
+                      {t('rsvp.events')} <span aria-hidden="true">*</span>
                     </legend>
                     <div className="checks">
                       {events.map((ev, i) => (
@@ -272,8 +294,8 @@ export function Rsvp({ guest }) {
                             name="events"
                             value={ev.id}
                             data-field={i === 0 ? 'events' : undefined}
-                            checked={values.events.includes(ev.name)}
-                            onChange={() => toggleEvent(ev.name)}
+                            checked={values.events.includes(ev.id)}
+                            onChange={() => toggleEvent(ev.id)}
                             onBlur={blur('events')}
                             aria-invalid={visibleError('events') ? 'true' : undefined}
                           />
@@ -287,9 +309,9 @@ export function Rsvp({ guest }) {
                     <button
                       type="button"
                       className="rsvp__all"
-                      onClick={() => set('events', values.events.length === events.length ? [] : events.map((ev) => ev.name))}
+                      onClick={() => set('events', values.events.length === events.length ? [] : events.map((ev) => ev.id))}
                     >
-                      {values.events.length === events.length ? 'Clear selection' : 'Select all celebrations'}
+                      {values.events.length === events.length ? t('rsvp.clearAll') : t('rsvp.selectAll')}
                     </button>
                     <FieldError id="rsvp-events-error" message={visibleError('events')} />
                   </fieldset>
@@ -298,7 +320,7 @@ export function Rsvp({ guest }) {
 
               <div className="field">
                 <label className="label field__label" htmlFor="rsvp-message">
-                  A note for the couple <span className="field__optional">(optional)</span>
+                  {t('rsvp.note')} <span className="field__optional">{t('rsvp.optional')}</span>
                 </label>
                 <textarea
                   {...fieldProps('message')}
@@ -309,7 +331,7 @@ export function Rsvp({ guest }) {
                   value={values.message}
                   onChange={(e) => set('message', e.target.value)}
                   onBlur={blur('message')}
-                  placeholder="Blessings, song requests, dietary needs…"
+                  placeholder={t('rsvp.notePlaceholder')}
                 />
                 <p className="field__count" aria-hidden="true">
                   {values.message.length}/{MESSAGE_MAX}
@@ -319,20 +341,28 @@ export function Rsvp({ guest }) {
 
               {status === 'error' && (
                 <p className="rsvp__failure" role="alert">
-                  Something went wrong while sending. Please check your connection and try again.
+                  {t('rsvp.failure')}
                 </p>
               )}
 
-              <button type="submit" className="button rsvp__submit" disabled={status === 'sending'}>
+              {/* Pointer-down keeps focus in the current field: otherwise its blur reveals an error
+                  above the button, shifting it away before the click lands (the guest would have to
+                  press twice). Submitting still validates every field. */}
+              <button
+                type="submit"
+                className="button rsvp__submit"
+                disabled={status === 'sending'}
+                onPointerDown={(e) => e.preventDefault()}
+              >
                 {status === 'sending' ? (
                   <>
                     <span className="spinner" aria-hidden="true" />
-                    Sending…
+                    {t('rsvp.sending')}
                   </>
                 ) : (
                   <>
                     <Icon name="send" />
-                    Send RSVP
+                    {t('rsvp.send')}
                   </>
                 )}
               </button>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Modal } from '../gifts/Modal.jsx';
+import { useI18n } from '../i18n/index.jsx';
 import { api } from '../lib/api.js';
 
 // Loads a dashboard resource; signs the couple out if the server says the session has ended.
@@ -21,27 +22,34 @@ export function useResource(path, onAuthError) {
 }
 
 export function Loading() {
-  return <p className="couple-muted" role="status">Loading…</p>;
+  const { t } = useI18n();
+  return (
+    <p className="couple-muted" role="status">
+      {t('couple.loading')}
+    </p>
+  );
 }
 
 export function LoadError({ error, retry }) {
+  const { t } = useI18n();
   return (
     <div className="couple-card" role="alert">
       <p className="form-alert">{error?.message || 'Something went wrong.'}</p>
       <button type="button" className="button button--small" onClick={retry}>
-        Try again
+        {t('couple.retry')}
       </button>
     </div>
   );
 }
 
 export function StatusBadge({ status }) {
-  const labels = { available: 'Available', hidden: 'Hidden', reserved: 'Reserved', received: 'Received', released: 'Released', paid: 'Paid', pledged: 'Demo pledge' };
-  return <span className={`badge badge--${status}`}>{labels[status] || status}</span>;
+  const { t } = useI18n();
+  return <span className={`badge badge--${status}`}>{t(`status.${status}`)}</span>;
 }
 
 // Confirmation for anything destructive (release, delete).
 export function ConfirmDialog({ open, title, body, confirmLabel, danger = true, onConfirm, onClose }) {
+  const { t } = useI18n();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   useEffect(() => {
@@ -64,7 +72,7 @@ export function ConfirmDialog({ open, title, body, confirmLabel, danger = true, 
         )}
         <div className="confirm__actions">
           <form method="dialog">
-            <button className="button button--ghost button--small">Cancel</button>
+            <button className="button button--ghost button--small">{t('confirm.cancel')}</button>
           </form>
           <button
             type="button"
@@ -81,7 +89,7 @@ export function ConfirmDialog({ open, title, body, confirmLabel, danger = true, 
               }
             }}
           >
-            {busy ? 'Working…' : confirmLabel}
+            {busy ? t('confirm.working') : confirmLabel}
           </button>
         </div>
       </div>
@@ -91,6 +99,7 @@ export function ConfirmDialog({ open, title, body, confirmLabel, danger = true, 
 
 // Image picker: uploads to the API (which re-encodes it) or accepts an https link.
 export function ImageField({ id, value, onChange, error }) {
+  const { t } = useI18n();
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const onFile = async (e) => {
@@ -98,7 +107,7 @@ export function ImageField({ id, value, onChange, error }) {
     e.target.value = '';
     if (!file) return;
     if (file.size > 6 * 1024 * 1024) {
-      setUploadError('Please choose an image under 6 MB.');
+      setUploadError(t('image.tooBig'));
       return;
     }
     setUploading(true);
@@ -118,22 +127,22 @@ export function ImageField({ id, value, onChange, error }) {
   return (
     <div className="field">
       <span className="label field__label" id={`${id}-label`}>
-        Image <span className="field__optional">(optional)</span>
+        {t('image.label')} <span className="field__optional">{t('editor.optional')}</span>
       </span>
       <div className="image-field">
-        <div className="image-field__preview">{value ? <img src={value} alt="" /> : <span aria-hidden="true">No image</span>}</div>
+        <div className="image-field__preview">{value ? <img src={value} alt="" /> : <span aria-hidden="true">{t('image.none')}</span>}</div>
         <div className="image-field__controls">
           <label className="button button--ghost button--small image-field__upload">
-            {uploading ? 'Uploading…' : 'Upload image'}
+            {uploading ? t('image.uploading') : t('image.upload')}
             <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={onFile} disabled={uploading} className="visually-hidden" />
           </label>
           <label className="visually-hidden" htmlFor={id}>
-            Image link
+            {t('image.link')}
           </label>
           <input
             id={id}
             className="field__input"
-            placeholder="or paste an https:// image link"
+            placeholder={t('image.paste')}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             aria-invalid={shownError ? 'true' : undefined}
@@ -146,11 +155,12 @@ export function ImageField({ id, value, onChange, error }) {
 }
 
 export function TextField({ id, label, optional, error, textarea, ...props }) {
+  const { t } = useI18n();
   const Tag = textarea ? 'textarea' : 'input';
   return (
     <div className="field">
       <label className="label field__label" htmlFor={id}>
-        {label} {optional && <span className="field__optional">(optional)</span>}
+        {label} {optional && <span className="field__optional">{t('editor.optional')}</span>}
       </label>
       <Tag
         id={id}

@@ -1,10 +1,12 @@
-import { couple, dates, gifts, invitation, photos } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
 import { withAmp } from '../components/Amp.jsx';
 import { Mandala } from '../components/Motifs.jsx';
-import { Ornament } from '../components/Ornament.jsx';
+import { LotusDivider, RoyalPeacock } from '../components/Painted.jsx';
 import { Picture } from '../components/Picture.jsx';
 
 export function GiftsHero({ guest }) {
+  const { t, content } = useI18n();
+  const { couple, dates, gifts, invitation, photos } = content;
   const { hero } = gifts;
   const photo = photos.gallery.find((p) => p.name === hero.photo) || photos.gallery[0];
   return (
@@ -12,25 +14,26 @@ export function GiftsHero({ guest }) {
       <Mandala className="gifts-hero__mandala" />
       <div className="container gifts-hero__inner">
         <div className="gifts-hero__text">
+          <RoyalPeacock className="gifts-hero__peacock" eager />
           {guest && <p className="gifts-hero__greeting">{invitation.personalGreeting.replace('{guest}', guest)}</p>}
           <p className="label gifts-hero__eyebrow">{hero.eyebrow}</p>
           <h1 id="gifts-hero-title" className="script gifts-hero__title">
             {withAmp(hero.title)}
           </h1>
-          <Ornament className="gifts-hero__ornament" />
+          <LotusDivider className="gifts-hero__ornament" />
           <p className="lede gifts-hero__message">{hero.message}</p>
           <p className="gifts-hero__couple">
-            <span className="script">
+            <span className="script latin" lang="en">
               {couple.bride.name} <span className="amp">&amp;</span> {couple.groom.name}
             </span>
             <span className="label">{dates.display}</span>
           </p>
-          <nav className="gifts-hero__nav" aria-label="Gift sections">
+          <nav className="gifts-hero__nav" aria-label={t('gifts.sections')}>
             <a className="button button--gold" href="#wishlist">
-              Our Wishlist
+              {t('teaser.wishlist')}
             </a>
             <a className="button button--ghost" href="#dreams">
-              Our Dreams
+              {t('teaser.dreams')}
             </a>
           </nav>
         </div>

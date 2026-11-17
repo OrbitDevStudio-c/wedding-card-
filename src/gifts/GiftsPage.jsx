@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { couple, gifts } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
+import { LanguageSwitcher } from '../i18n/LanguageSwitcher.jsx';
 import { Monogram } from '../components/Monogram.jsx';
 import { Footer } from '../sections/Footer.jsx';
 import { useGuestName } from '../hooks/useGuestName.js';
@@ -29,20 +31,22 @@ export function useWedding() {
 }
 
 function TopBar({ guest }) {
+  const { t } = useI18n();
   const home = withGuest('/', guest);
   const gifts = withGuest('/gifts', guest);
   return (
     <header className="gifts-bar tone-dark">
       <a className="gifts-bar__brand" href={gifts} onClick={linkHandler(gifts)}>
         <Monogram className="gifts-bar__monogram" shimmer={false} label={false} />
-        <span className="label">Wedding Gifts</span>
+        <span className="label">{t('gifts.bar')}</span>
       </a>
+      <LanguageSwitcher tone="dark" className="gifts-bar__lang" />
       <a className="gifts-bar__back" href={home} onClick={linkHandler(home)}>
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M15 5l-7 7 7 7" />
         </svg>
         <span>
-          Back <span className="gifts-bar__long">to the invitation</span>
+          {t('gifts.back')} <span className="gifts-bar__long">{t('gifts.backLong')}</span>
         </span>
       </a>
     </header>
@@ -51,18 +55,19 @@ function TopBar({ guest }) {
 
 export default function GiftsPage({ path }) {
   const guest = useGuestName();
+  const { t } = useI18n();
   const { status, wedding, error } = useWedding();
   const dreamSlug = path.match(/^\/gifts\/dream\/([^/]+)$/)?.[1];
   const known = path === '/gifts' || Boolean(dreamSlug);
 
   useEffect(() => {
-    document.title = `Wedding Gifts · ${couple.bride.name} & ${couple.groom.name}`;
+    document.title = `${t('gifts.bar')} · ${couple.bride.name} & ${couple.groom.name}`;
     document.body.classList.remove('is-locked');
-  }, []);
+  }, [t]);
 
   let content;
   if (!known) content = <NotFound guest={guest} />;
-  else if (status === 'loading') content = <div className="gifts-loading" role="status" aria-label="Loading the gift page" />;
+  else if (status === 'loading') content = <div className="gifts-loading" role="status" aria-label={t('gifts.loading')} />;
   else if (status === 'error' || !wedding?.giftsEnabled) content = <Unavailable guest={guest} error={error} />;
   else if (dreamSlug) content = <DreamPage slug={dreamSlug} guest={guest} wedding={wedding} />;
   else
@@ -77,7 +82,7 @@ export default function GiftsPage({ path }) {
   return (
     <div className="gifts-page">
       <a className="skip-link" href="#gifts-main">
-        Skip to content
+        {t('gifts.skip')}
       </a>
       <TopBar guest={guest} />
       <main id="gifts-main">{content}</main>
@@ -87,26 +92,23 @@ export default function GiftsPage({ path }) {
 }
 
 function Unavailable({ guest, error }) {
+  const { t } = useI18n();
   const home = withGuest('/', guest);
   // Network failure or server/proxy error: say so and offer a retry, rather than "not open".
   const unreachable = Boolean(error) && (error.status === 0 || error.status >= 500);
   return (
     <section className="section tone-parchment gifts-message">
       <div className="container container--narrow">
-        <h1 className="script gifts-message__title">Wedding Gifts</h1>
-        <p className="lede">
-          {unreachable
-            ? 'We could not load the gift page just now. Please check your connection and try again.'
-            : 'The gift page is not open at the moment. Your presence is the only gift we need.'}
-        </p>
+        <h1 className="script gifts-message__title">{t('gifts.closedTitle')}</h1>
+        <p className="lede">{unreachable ? t('gifts.unreachable') : t('gifts.closed')}</p>
         <div className="button-row">
           {unreachable && (
             <button type="button" className="button" onClick={() => window.location.reload()}>
-              Try again
+              {t('gifts.tryAgain')}
             </button>
           )}
           <a className="button button--ghost" href={home} onClick={linkHandler(home)}>
-            Back to the invitation
+            {t('gifts.backInvite')}
           </a>
         </div>
       </div>
@@ -115,15 +117,16 @@ function Unavailable({ guest, error }) {
 }
 
 function NotFound({ guest }) {
+  const { t } = useI18n();
   const to = withGuest('/gifts', guest);
   return (
     <section className="section tone-parchment gifts-message">
       <div className="container container--narrow">
-        <h1 className="script gifts-message__title">Page not found</h1>
-        <p className="lede">This page may have moved. The full wishlist is just a tap away.</p>
+        <h1 className="script gifts-message__title">{t('gifts.notFoundTitle')}</h1>
+        <p className="lede">{t('gifts.notFound')}</p>
         <div className="button-row">
           <a className="button" href={to} onClick={linkHandler(to)}>
-            See all gifts
+            {t('gifts.seeAll')}
           </a>
         </div>
       </div>

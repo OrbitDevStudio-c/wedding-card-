@@ -71,3 +71,17 @@
     padding-inline: var(--space-6);
   }
 }
+
+.gifts-teaser__painted {
+  width: min(9rem, 100%);
+  height: 6.5rem;
+  margin-bottom: var(--space-1);
+}
+
+.gifts-teaser__painted--lotus {
+  width: min(8rem, 100%);
+}
+
+.gifts-teaser__card {
+  background: rgb(40 8 18 / 0.35);
+}

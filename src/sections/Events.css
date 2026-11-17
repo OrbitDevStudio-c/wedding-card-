@@ -177,3 +177,55 @@
   background: var(--swatch);
   box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
 }
+
+/* Royal divider between the two days */
+.events__divider {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.events__elephant {
+  width: clamp(6.5rem, 22vw, 10rem);
+}
+
+.events__feather {
+  width: clamp(1.4rem, 4vw, 2rem);
+  margin-bottom: 0.4rem;
+}
+
+.events__day-title .label {
+  color: var(--burgundy);
+}
+
+/* Colour-coded celebration cards: each takes its first dress-code colour as an accent */
+.event-card {
+  border-top: 4px solid var(--event-accent, var(--saffron));
+}
+
+.event-card__icon {
+  color: var(--event-accent, var(--gold-700));
+}
+
+.events__garland {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(92%, 30rem);
+  transform: translateX(-50%);
+}
+
+.events {
+  padding-top: calc(var(--space-12) + 1rem);
+}
+
+.events__elephant {
+  width: clamp(6.5rem, 24vw, 10.5rem);
+}
+
+.events__feather {
+  width: clamp(2.6rem, 9vw, 4rem);
+  margin-bottom: 0.4rem;
+}

@@ -32,7 +32,7 @@
 }
 
 .section-heading__ornament {
-  width: 10rem;
+  width: min(15rem, 70vw);
   height: auto;
   color: var(--gold-500);
 }

@@ -54,7 +54,8 @@ test.describe('public wishlist', () => {
     expect(gifts.some((g) => g.id === reserved.id)).toBe(false);
 
     for (const g of gifts) {
-      expect(Object.keys(g).sort()).toEqual(['category', 'description', 'estimatedPrice', 'id', 'image', 'name', 'purchaseUrl']);
+      expect(Object.keys(g).sort()).toEqual(['category', 'description', 'estimatedPrice', 'id', 'image', 'name', 'purchaseUrl', 'translations']);
+      expect(Object.keys(g.translations).every((l) => l === 'gu')).toBe(true);
     }
   });
 

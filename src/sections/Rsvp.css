@@ -433,3 +433,26 @@
     stroke-dashoffset: 0;
   }
 }
+
+.rsvp__corner {
+  position: absolute;
+  width: clamp(3.5rem, 12vw, 5.5rem);
+  z-index: 0;
+}
+
+.rsvp__corner--tl {
+  top: -10px;
+  left: -10px;
+  transform: rotate(-90deg) scaleX(-1);
+}
+
+.rsvp__corner--br {
+  right: -10px;
+  bottom: -10px;
+  transform: rotate(90deg) scaleX(-1);
+}
+
+.rsvp__card > *:not(.rsvp__corner) {
+  position: relative;
+  z-index: 1;
+}

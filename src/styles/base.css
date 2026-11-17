@@ -377,3 +377,65 @@ h4,
   min-height: 100svh;
   background: var(--emerald-900);
 }
+
+/* ---------- Gujarati ----------
+   Gujarati has no capitals and its conjuncts break under wide letter-spacing, and its glyphs
+   sit taller than Cormorant's, so labels, scripts and body text get gentler settings. */
+:lang(gu) body,
+body:lang(gu) {
+  line-height: 1.75;
+}
+
+:lang(gu) .label,
+:lang(gu) .button,
+:lang(gu) .chip {
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-size: 0.9375rem;
+}
+
+:lang(gu) .script {
+  font-family: var(--font-gujarati), serif;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+:lang(gu) h1,
+:lang(gu) h2,
+:lang(gu) h3,
+:lang(gu) h4 {
+  line-height: 1.45;
+}
+
+:lang(gu) .lede {
+  font-style: normal;
+}
+
+/* Romanised names and numbers stay in their Latin typefaces inside Gujarati text */
+.latin {
+  font-family: var(--font-serif);
+}
+
+.script.latin,
+:lang(gu) .script.latin {
+  font-family: var(--font-script);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+/* Jaali: a faint carved-stone lattice behind parchment sections (decorative only) */
+.tone-parchment {
+  background-color: var(--ivory-100);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23b8955a' stroke-opacity='0.13' stroke-width='1'%3E%3Cpath d='M24 4 L30 18 L44 24 L30 30 L24 44 L18 30 L4 24 L18 18 Z'/%3E%3Ccircle cx='24' cy='24' r='5'/%3E%3Cpath d='M0 0 L8 8 M48 0 L40 8 M0 48 L8 40 M48 48 L40 40'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 48px 48px;
+}
+
+/* Royal colour bands (dark tones): peacock blue and maroon join the emerald */
+.tone-dark.tone-peacock {
+  background: linear-gradient(160deg, var(--peacock-deep), #0a5d6e 55%, var(--peacock-deep));
+}
+
+.tone-dark.tone-maroon {
+  background: linear-gradient(160deg, #5a1a2c, var(--maroon) 55%, #5a1a2c);
+}

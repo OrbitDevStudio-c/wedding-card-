@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
+import { useI18n } from '../i18n/index.jsx';
 
 // Native <dialog> modal: the browser handles the focus trap, Escape and the inert backdrop.
 // Focus returns to whatever opened it when it closes.
 export function Modal({ open, onClose, labelledBy, className = '', children }) {
+  const { t } = useI18n();
   const ref = useRef(null);
   const opener = useRef(null);
 
@@ -41,7 +43,7 @@ export function Modal({ open, onClose, labelledBy, className = '', children }) {
     <dialog ref={ref} className={`modal ${className}`} aria-labelledby={labelledBy} onClick={onClick}>
       {open && (
         <div className="modal__panel">
-          <button type="button" className="modal__close" onClick={() => ref.current.close()} aria-label="Close">
+          <button type="button" className="modal__close" onClick={() => ref.current.close()} aria-label={t('common.close')}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>

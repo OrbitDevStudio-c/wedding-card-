@@ -1,3 +1,4 @@
+import { useI18n } from '../i18n/index.jsx';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from './Icon.jsx';
@@ -5,6 +6,7 @@ import { Picture } from './Picture.jsx';
 import './Lightbox.css';
 
 export default function Lightbox({ items, index, onIndex, onClose }) {
+  const { t } = useI18n();
   const ref = useRef(null);
   const closeRef = useRef(null);
   const swipe = useRef(null);
@@ -60,10 +62,10 @@ export default function Lightbox({ items, index, onIndex, onClose }) {
       className="lightbox"
       role="dialog"
       aria-modal="true"
-      aria-label="Photo viewer"
+      aria-label={t('lightbox.label')}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <button ref={closeRef} type="button" className="lightbox__control lightbox__close" onClick={onClose} aria-label="Close photo viewer">
+      <button ref={closeRef} type="button" className="lightbox__control lightbox__close" onClick={onClose} aria-label={t('lightbox.close')}>
         <Icon name="close" />
       </button>
       <figure className="lightbox__figure" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
@@ -85,10 +87,10 @@ export default function Lightbox({ items, index, onIndex, onClose }) {
           <span>{item.alt}</span>
         </figcaption>
       </figure>
-      <button type="button" className="lightbox__control lightbox__prev" onClick={() => go(-1)} aria-label="Previous photo">
+      <button type="button" className="lightbox__control lightbox__prev" onClick={() => go(-1)} aria-label={t('lightbox.prev')}>
         <Icon name="chevronLeft" />
       </button>
-      <button type="button" className="lightbox__control lightbox__next" onClick={() => go(1)} aria-label="Next photo">
+      <button type="button" className="lightbox__control lightbox__next" onClick={() => go(1)} aria-label={t('lightbox.next')}>
         <Icon name="chevronRight" />
       </button>
     </div>,

@@ -22,6 +22,8 @@ Crafted by [OrbitDevStudio](https://orbit-dev-studio.vercel.app/).
 - **Indian royal design language:** jharokha arches, a marigold toran, mandalas, a lotus divider and a line-art lake palace, in emerald, ivory and antique gold.
 - **Background music** that fades in when the doors open and pauses when the guest switches apps.
 - **WhatsApp sharing** with a rich link preview (title, date and image).
+- **English and ગુજરાતી:** a language switch on every page translates the whole experience, remembers the choice, and loads Gujarati only for guests who choose it. See [English ⇄ ગુજરાતી](#english--ગુજરાતી).
+- **Royal heritage design:** peacocks, caparisoned elephants, jharokha corners, jaali lattices and peacock-feather dividers, drawn as light SVG. See [Royal heritage design](#royal-heritage-design).
 - **Responsive and accessible:** tested from 320 px phones to 1920 px desktops, WCAG 2.1 AA checked with axe-core, and reduced-motion support.
 - **Wedding Gifts & Our Dreams:** a private gift registry where each gift can be reserved by exactly one guest (enforced by the database), contributions towards bigger dreams with verified Razorpay payments, a secure couple dashboard and QR codes. See [Wedding Gifts & Our Dreams](#wedding-gifts--our-dreams).
 - **Fast:** under 70 KB of JavaScript (gzip), AVIF/WebP photos, self-hosted fonts, and lazy-loaded gallery and music.
@@ -228,6 +230,73 @@ Private (session cookie, plus `X-CSRF-Token` on writes; always scoped to the cou
 | GET | `/api/couple/contributions` |
 
 Errors are JSON: `{error, message, fields?}`.
+
+---
+
+## English ⇄ ગુજરાતી
+
+Every page (the invitation, the gift page and the couple dashboard) has a language switch,
+`[ EN | ગુજરાતી ]`. On the invitation it floats top-right, above the palace doors, so guests can
+choose before opening; on the gift page and dashboard it sits in the top bar.
+
+- **Instant:** switching re-renders in place: no reload, and forms keep what the guest typed. Errors already
+  on screen are re-worded too, because validation stores message keys, not sentences.
+- **Remembered:** the choice is saved in the browser and kept across pages, refreshes and later visits.
+  A link can also choose it: `https://your-site/?guest=Priya&lang=gu`.
+- **Accessible:** the switch is a pair of toggle buttons (`aria-pressed`), each label carries its own
+  `lang`, and `<html lang>` follows the choice, so screen readers pronounce Gujarati correctly.
+- **Light:** the Gujarati pack (≈9 KB gzip) and the Gujarati font (≈33 KB per weight) load only for guests
+  who choose Gujarati. Returning Gujarati guests get the pack before the first paint, so there is no flash of English.
+- **Typography:** Gujarati uses self-hosted **Noto Serif Gujarati** (OFL), limited by `unicode-range` to
+  Gujarati characters. Latin names, numbers and prices keep Pinyon Script, Cormorant and Cinzel. Gujarati
+  labels drop the uppercase and wide letter-spacing that would break its conjuncts, and get taller line-heights.
+
+### Where the text lives
+
+| What | English | Gujarati |
+|---|---|---|
+| Interface text (buttons, labels, errors, dashboard) | `src/i18n/strings.en.js` | `src/i18n/strings.gu.js` |
+| The couple's content (story, events, travel, blessings, gift-page wording) | `src/config.js` | `src/i18n/content.gu.js` |
+| Gift names and descriptions, dream titles and descriptions | Dashboard | Dashboard → each gift / dream → **Gujarati version** |
+
+`content.gu.js` mirrors the shape of `config.js` but lists only text. Arrays line up by position
+(`story[0]` translates `story[0]`). **Anything missing or empty falls back to English**, so a half-translated
+wedding never shows blank labels. Personal names, venue names, addresses, dates, prices, phone numbers and
+links are deliberately not translated.
+
+To add another language later: add `strings.<code>.js` and `content.<code>.js`, export them from a pack like
+`src/i18n/gu.js`, register it in `LANGUAGES` and `LOADERS` in `src/i18n/index.jsx`, and add the code to
+`TRANSLATION_LANGS` in `server/src/lib/validate.js`.
+
+---
+
+## Royal heritage design
+
+The invitation and gift page share an Indian royal design language built on the original palette:
+
+| Token | Colour | Used for |
+|---|---|---|
+| `--royal-emerald` | `#123D32` | Gift page hero, line work ink |
+| `--peacock` | `#075B50` | Peacock body, feather barbs |
+| `--antique-gold` | `#C5A15B` | Borders, corners, dividers, highlights (never large fills) |
+| `--warm-ivory` / `--palace-cream` | `#F8F3E8` / `#EFE3CC` | Elephant bodies, QR frames |
+| `--burgundy` | `#702D46` | Elephant jhool and medallions, prices, day labels |
+| `--heritage-brown` | `#49352C` | Reserved for deep accents |
+
+Artwork lives in [`src/components/Royal.jsx`](src/components/Royal.jsx) as lightweight SVG (no images):
+
+- **Peacock**: a profile with a fanned train of eyed feathers that opens feather by feather on the gift page
+  (static under reduced motion).
+- **Royal elephant**: caparisoned, with a lattice jhool (ceremonial blanket) and scalloped hem, a forehead
+  plate, tassels, anklets and a raised trunk. Pairs flank the hero arch on wide screens, divide the two
+  days of celebrations and sit beneath the blessings.
+- **Peacock-feather divider**: two feathers around a lotus, under every section title.
+- **Jharokha corners** on wishlist cards and QR frames, **chhatri** skylines in the footer and on the
+  dashboard login, and a faint carved-stone **jaali** lattice behind parchment sections, the gift hero and the
+  reservation modal.
+
+All of it is decorative (`aria-hidden`) and outside the text flow, so the overlap and accessibility tests
+are unaffected.
 
 ---
 
@@ -451,8 +520,15 @@ orders API, and test-only secrets. Nothing touches your real `wedding_gifts` dat
   login, a private reservation with its message, release with confirmation; adding and editing a gift; QR codes
   encode the deployed domain; no horizontal overflow and axe-core (WCAG 2.1 AA) on every gift and dashboard page
 
+**Languages** (`tests/i18n.spec.js`): English by default; switching both ways without a reload; keyboard
+and `aria-pressed`; persistence after refresh and across pages; every section translated; English fallback
+for untranslated content and gifts; RSVP and gift-reservation validation in both languages, with typed answers
+and the `?guest=` greeting surviving a switch; and Gujarati at 320 px with no overflow, no overlapping text, the
+Gujarati font loaded and no axe violations.
+
 ```bash
 npm run test:gifts                    # only the gifts tests
+npx playwright test tests/i18n.spec.js
 ```
 
 The gifts tests are slower than the rest because every request goes to the remote database.
@@ -488,6 +564,7 @@ public/                  fonts (subset woff2), photos, music, share image, favic
 photos-src/              original photos; run `npm run images` after changing them
   gifts/                 /gifts and /gifts/dream/:slug (lazy chunk): hero, wishlist, reserve dialog, dreams
   couple/                /couple/* dashboard (lazy chunk): login, overview, wishlist, reservations, dreams, QR
+  i18n/                  language context, switcher, English/Gujarati strings, Gujarati content overlay
 server/                  gifts API: Express + PostgreSQL (see "Wedding Gifts & Our Dreams")
   src/db.js              connection pool and schema (tables, the unique active-reservation index)
   src/routes/            public.js, couple.js, auth.js, payments.js (webhook)

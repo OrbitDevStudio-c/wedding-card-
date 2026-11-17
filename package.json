@@ -30,6 +30,7 @@
     "@breezystack/lamejs": "^1.2.7",
     "@fontsource/cinzel": "^5.1.0",
     "@fontsource/cormorant-garamond": "^5.1.0",
+    "@fontsource/noto-serif-gujarati": "^5.3.0",
     "@fontsource/pinyon-script": "^5.1.0",
     "@playwright/test": "1.64.1",
     "@vitejs/plugin-react": "^4.3.4",

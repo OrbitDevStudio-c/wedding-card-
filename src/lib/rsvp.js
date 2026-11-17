@@ -1,4 +1,4 @@
-import { rsvp } from '../config.js';
+import { events as allEvents, rsvp } from '../config.js';
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -10,7 +10,7 @@ export async function submitRsvp(data) {
     phone: data.phone.trim(),
     attending: data.attending === 'yes' ? 'Yes' : 'No',
     guests: data.attending === 'yes' ? String(data.guests) : '0',
-    events: data.attending === 'yes' ? data.events.join(', ') : '',
+    events: data.attending === 'yes' ? data.events.map((id) => allEvents.find((e) => e.id === id)?.name || id).join(', ') : '',
     message: data.message.trim(),
     submittedAt: new Date().toISOString(),
   };

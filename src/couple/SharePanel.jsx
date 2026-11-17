@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { SITE_URL, couple } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
+import { FloralCorner } from '../components/Painted.jsx';
 import { LoadError, Loading, useResource } from './shared.jsx';
 
 // QR codes always encode the deployed domain (VITE_SITE_URL), never the address the couple
@@ -18,6 +20,7 @@ function download(href, name) {
 }
 
 export function QrCard({ title, path, fileName }) {
+  const { t } = useI18n();
   const url = shareUrl(path);
   const [png, setPng] = useState('');
   const [error, setError] = useState('');
@@ -31,9 +34,9 @@ export function QrCard({ title, path, fileName }) {
       setPng(await QRCode.toDataURL(url, { ...QR_OPTIONS, width: 1024 }));
       setError('');
     } catch {
-      setError('The QR code could not be generated.');
+      setError(t('qr.error'));
     }
-  }, [url]);
+  }, [url, t]);
 
   useEffect(() => {
     generate();
@@ -53,14 +56,23 @@ export function QrCard({ title, path, fileName }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      setError('Copy failed. Select the link and copy it manually.');
+      setError(t('qr.copyFailed'));
     }
   };
 
   return (
     <div className="qr-card" data-testid="qr-card" data-url={url}>
-      <div className="qr-card__code">
-        {png ? <img src={png} alt={`QR code that opens ${title}`} width="220" height="220" data-testid="qr-image" /> : <span className="couple-muted">Generating…</span>}
+      <div className="qr-card__frame">
+        <div className="qr-card__code">
+          <FloralCorner className="qr-card__corner qr-card__corner--tl" />
+          <FloralCorner className="qr-card__corner qr-card__corner--tr" />
+          {png ? (
+            <img src={png} alt={t('qr.alt', { title })} width="220" height="220" data-testid="qr-image" />
+          ) : (
+            <span className="couple-muted">{t('qr.generating')}</span>
+          )}
+        </div>
+        <p className="qr-card__scan">{t('qr.scan')}</p>
       </div>
       <div className="qr-card__body">
         <p className="manage-item__name">{title}</p>
@@ -70,20 +82,20 @@ export function QrCard({ title, path, fileName }) {
         {error && <p className="form-alert">{error}</p>}
         <div className="qr-card__actions">
           <button type="button" className="button button--small" onClick={() => download(png, `${fileName}.png`)} disabled={!png}>
-            Download PNG
+            {t('qr.png')}
           </button>
           <button type="button" className="button button--ghost button--small" onClick={downloadSvg}>
-            Download SVG
+            {t('qr.svg')}
           </button>
           <button type="button" className="button button--ghost button--small" onClick={copy}>
-            {copied ? 'Copied!' : 'Copy link'}
+            {copied ? t('qr.copied') : t('qr.copy')}
           </button>
           <button type="button" className="button button--ghost button--small" onClick={() => setVersion((n) => n + 1)}>
-            Regenerate
+            {t('qr.regenerate')}
           </button>
         </div>
         <span className="visually-hidden" aria-live="polite">
-          {copied ? 'Link copied' : ''}
+          {copied ? t('qr.copiedAnnounce') : ''}
         </span>
       </div>
     </div>
@@ -91,22 +103,20 @@ export function QrCard({ title, path, fileName }) {
 }
 
 export function SharePanel({ onAuthError }) {
+  const { t } = useI18n();
   const [state, reload] = useResource('/couple/dreams', onAuthError);
   return (
     <div className="couple-stack">
-      <p className="couple-muted">
-        Codes point to <strong>{SITE_URL}</strong>. Print them on cards or share them on WhatsApp. If you change a dream's link, download its
-        code again.
-      </p>
+      <p className="couple-muted">{t('share.intro', { url: SITE_URL })}</p>
       <section className="couple-card" aria-labelledby="master-qr">
         <h2 id="master-qr" className="couple-h2">
-          Wedding Gifts page
+          {t('share.master')}
         </h2>
-        <QrCard title={`${couple.bride.name} & ${couple.groom.name} · Wedding Gifts`} path="/gifts" fileName="wedding-gifts" />
+        <QrCard title={`${couple.bride.name} & ${couple.groom.name} · ${t('gifts.bar')}`} path="/gifts" fileName="wedding-gifts" />
       </section>
       <section className="couple-card" aria-labelledby="dream-qrs">
         <h2 id="dream-qrs" className="couple-h2">
-          Dreams
+          {t('share.dreams')}
         </h2>
         {state.status === 'loading' && <Loading />}
         {state.status === 'error' && <LoadError error={state.error} retry={reload} />}
@@ -115,7 +125,7 @@ export function SharePanel({ onAuthError }) {
             {state.data.dreams.map((d) => (
               <QrCard key={d.id} title={d.title} path={`/gifts/dream/${d.slug}`} fileName={`dream-${d.slug}`} />
             ))}
-            {!state.data.dreams.length && <p className="couple-muted">Add a dream to get its QR code.</p>}
+            {!state.data.dreams.length && <p className="couple-muted">{t('share.noDreams')}</p>}
           </div>
         )}
       </section>

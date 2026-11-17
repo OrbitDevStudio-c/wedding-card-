@@ -88,3 +88,32 @@
   margin-top: var(--space-1);
   color: var(--gold-700);
 }
+
+.blessings__ornament {
+  width: min(15rem, 70vw);
+}
+
+.blessings__elephants {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.blessings__elephant {
+  width: clamp(5.5rem, 24vw, 8.5rem);
+}
+
+.blessings__elephants {
+  align-items: flex-end;
+  gap: 0;
+}
+
+.blessings__peacock {
+  width: clamp(6rem, 28vw, 10rem);
+}
+
+.blessings__lotus {
+  width: clamp(3.5rem, 14vw, 5rem);
+  margin-inline: -0.5rem;
+}

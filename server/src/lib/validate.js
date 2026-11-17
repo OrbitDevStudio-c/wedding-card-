@@ -80,6 +80,9 @@ export function validate(body, rules, { partial = false } = {}) {
       case 'image':
         value = safeImagePath(raw);
         break;
+      case 'translations':
+        value = cleanTranslations(raw, rule.fields);
+        break;
       default:
         value = undefined;
     }
@@ -87,6 +90,28 @@ export function validate(body, rules, { partial = false } = {}) {
     else out[key] = value;
   }
   if (Object.keys(fields).length) throw new HttpError(400, 'validation', 'Please check the highlighted fields.', fields);
+  return out;
+}
+
+// {gu: {name: '...', description: '...'}}: only known languages and fields, only strings,
+// each within its length limit. Empty strings are dropped so the English text shows instead.
+export const TRANSLATION_LANGS = ['gu'];
+function cleanTranslations(raw, fields) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
+  const out = {};
+  for (const [lang, entry] of Object.entries(raw)) {
+    if (!TRANSLATION_LANGS.includes(lang)) return undefined;
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return undefined;
+    const clean = {};
+    for (const [field, value] of Object.entries(entry)) {
+      const rule = fields[field];
+      if (!rule) return undefined;
+      const text = cleanText(value, rule);
+      if (text === null) return undefined;
+      if (text) clean[field] = text;
+    }
+    if (Object.keys(clean).length) out[lang] = clean;
+  }
   return out;
 }
 
@@ -120,6 +145,12 @@ export const giftRules = {
   purchaseUrl: { type: 'url', default: '', message: 'Enter a full link starting with https://' },
   category: { type: 'enum', values: GIFT_CATEGORIES, default: 'other' },
   isActive: { type: 'bool', default: true },
+  translations: {
+    type: 'translations',
+    default: {},
+    fields: { name: { max: 120 }, description: { max: 600, multiline: true } },
+    message: 'Translated name up to 120 characters, description up to 600.',
+  },
 };
 
 export const dreamRules = {
@@ -130,4 +161,10 @@ export const dreamRules = {
   targetAmount: { type: 'int', required: true, min: 1, max: 100_000_000, message: 'Enter a goal in whole rupees.' },
   offlineAmount: { type: 'int', min: 0, max: 100_000_000, default: 0, message: 'Enter an amount in whole rupees.' },
   isActive: { type: 'bool', default: true },
+  translations: {
+    type: 'translations',
+    default: {},
+    fields: { title: { max: 120 }, description: { max: 1000, multiline: true } },
+    message: 'Translated title up to 120 characters, description up to 1000.',
+  },
 };

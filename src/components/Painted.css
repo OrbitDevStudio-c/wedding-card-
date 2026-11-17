@@ -1,0 +1,38 @@
+/* The painted collection (Painted.jsx) */
+.painted {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Mirroring uses the standalone `scale` property, so it composes with any transform or
+   entrance animation instead of being overwritten by it. */
+.painted--mirror {
+  scale: -1 1;
+}
+
+/* Section divider: feather, lotus, feather */
+.painted-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.painted-divider__feather {
+  width: 32%;
+  max-width: 5.5rem;
+}
+
+.painted-divider__lotus {
+  width: 16%;
+  max-width: 3.25rem;
+  flex-shrink: 0;
+}
+
+/* The source peacock is 309 px wide: never show it larger, so it stays crisp */
+.painted-peacock {
+  max-width: 309px;
+}

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Modal } from '../gifts/Modal.jsx';
+import { useI18n } from '../i18n/index.jsx';
 import { api, formatINR } from '../lib/api.js';
 import { QrCard } from './SharePanel.jsx';
 import { ConfirmDialog, ImageField, LoadError, Loading, StatusBadge, TextField, useResource } from './shared.jsx';
 
-const EMPTY = { title: '', slug: '', description: '', image: '', targetAmount: '', offlineAmount: '0', isActive: true };
+const EMPTY = { title: '', slug: '', description: '', image: '', targetAmount: '', offlineAmount: '0', isActive: true, titleGu: '', descriptionGu: '' };
 
 export function DreamsManager({ onAuthError }) {
+  const { t } = useI18n();
   const [state, reload, setState] = useResource('/couple/dreams', onAuthError);
   const [editing, setEditing] = useState(null);
   const [deleting, setDeleting] = useState(null);
@@ -32,11 +34,9 @@ export function DreamsManager({ onAuthError }) {
   return (
     <div className="couple-stack">
       <div className="couple-toolbar">
-        <p className="couple-muted">
-          Totals include verified online payments plus anything you record as received offline (cash, bank transfer).
-        </p>
+        <p className="couple-muted">{t('dreams.intro')}</p>
         <button type="button" className="button button--small" onClick={() => setEditing('new')}>
-          Add a dream
+          {t('dreams.add')}
         </button>
       </div>
       {error && (
@@ -44,7 +44,7 @@ export function DreamsManager({ onAuthError }) {
           {error}
         </p>
       )}
-      {!dreams.length && <p className="couple-card couple-muted">No dreams yet.</p>}
+      {!dreams.length && <p className="couple-card couple-muted">{t('dreams.empty')}</p>}
       <ul className="manage-list" data-testid="manage-dreams">
         {dreams.map((d) => (
           <li key={d.id} className="manage-item" data-testid="manage-dream">
@@ -52,24 +52,27 @@ export function DreamsManager({ onAuthError }) {
             <div className="manage-item__info">
               <p className="manage-item__name">{d.title}</p>
               <p className="couple-muted">
-                {formatINR(d.raisedAmount)} of {formatINR(d.targetAmount)} · {d.progress}% · {d.contributions} online
+                {t('dreams.summary', { raised: formatINR(d.raisedAmount), target: formatINR(d.targetAmount), pct: d.progress, n: d.contributions })}
               </p>
               <StatusBadge status={d.isActive ? 'available' : 'hidden'} />
               <span className="couple-muted"> /gifts/dream/{d.slug}</span>
             </div>
             <div className="manage-item__actions">
               <button type="button" className="button button--ghost button--small" onClick={() => setQr(d)}>
-                QR<span className="visually-hidden"> code for {d.title}</span>
+                {t('dreams.qr')}
+                <span className="visually-hidden"> {t('dreams.qrFor', { title: d.title })}</span>
               </button>
               <button type="button" className="button button--ghost button--small" onClick={() => setEditing(d)}>
-                Edit<span className="visually-hidden"> {d.title}</span>
+                {t('manage.edit')}
+                <span className="visually-hidden"> {d.title}</span>
               </button>
               <button type="button" className="button button--ghost button--small" onClick={() => toggle(d)}>
-                {d.isActive ? 'Hide' : 'Show'}
+                {d.isActive ? t('manage.hide') : t('manage.show')}
                 <span className="visually-hidden"> {d.title}</span>
               </button>
               <button type="button" className="button button--ghost button--small" onClick={() => setDeleting(d)}>
-                Delete<span className="visually-hidden"> {d.title}</span>
+                {t('manage.delete')}
+                <span className="visually-hidden"> {d.title}</span>
               </button>
             </div>
           </li>
@@ -102,13 +105,9 @@ export function DreamsManager({ onAuthError }) {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete this dream?"
-        body={
-          deleting
-            ? `“${deleting.title}” and its link will be removed. Dreams that have received verified payments cannot be deleted; hide them instead.`
-            : ''
-        }
-        confirmLabel="Delete dream"
+        title={t('dreams.deleteTitle')}
+        body={deleting ? t('dreams.deleteBody', { title: deleting.title }) : ''}
+        confirmLabel={t('dreams.delete')}
         onClose={() => setDeleting(null)}
         onConfirm={async () => {
           await api(`/couple/dreams/${deleting.id}`, { method: 'DELETE' });
@@ -120,8 +119,17 @@ export function DreamsManager({ onAuthError }) {
 }
 
 function DreamEditor({ dream, onSaved }) {
+  const { t } = useI18n();
   const [v, setV] = useState(() =>
-    dream ? { ...dream, targetAmount: String(dream.targetAmount), offlineAmount: String(dream.offlineAmount) } : EMPTY,
+    dream
+      ? {
+          ...dream,
+          targetAmount: String(dream.targetAmount),
+          offlineAmount: String(dream.offlineAmount),
+          titleGu: dream.translations?.gu?.title || '',
+          descriptionGu: dream.translations?.gu?.description || '',
+        }
+      : EMPTY,
   );
   const [fields, setFields] = useState({});
   const [error, setError] = useState('');
@@ -142,6 +150,7 @@ function DreamEditor({ dream, onSaved }) {
       targetAmount: num(v.targetAmount),
       offlineAmount: num(v.offlineAmount) ?? 0,
       isActive: v.isActive,
+      translations: { gu: { title: v.titleGu.trim(), description: v.descriptionGu.trim() } },
     };
     try {
       const { dream: saved } = await api(dream ? `/couple/dreams/${dream.id}` : '/couple/dreams', { method: dream ? 'PUT' : 'POST', body });
@@ -156,12 +165,12 @@ function DreamEditor({ dream, onSaved }) {
   return (
     <form className="editor__form" onSubmit={onSubmit} noValidate>
       <h2 id="dream-editor-title" className="couple-h2">
-        {dream ? 'Edit dream' : 'Add a dream'}
+        {dream ? t('dreamEditor.edit') : t('dreamEditor.add')}
       </h2>
-      <TextField id="dream-title" label="Dream title" value={v.title} onChange={set('title')} maxLength={120} error={fields.title} />
+      <TextField id="dream-title" label={t('dreamEditor.title')} value={v.title} onChange={set('title')} maxLength={120} error={fields.title} />
       <TextField
         id="dream-slug"
-        label="Link name"
+        label={t('dreamEditor.slug')}
         optional
         placeholder="switzerland-honeymoon"
         value={v.slug}
@@ -170,11 +179,11 @@ function DreamEditor({ dream, onSaved }) {
         error={fields.slug}
       />
       {dream && v.slug !== dream.slug && (
-        <p className="form-note">Changing the link breaks QR codes you have already printed. Download a new QR code afterwards.</p>
+        <p className="form-note">{t('dreamEditor.slugWarn')}</p>
       )}
       <TextField
         id="dream-description"
-        label="Description"
+        label={t('dreamEditor.description')}
         optional
         textarea
         rows={3}
@@ -185,10 +194,10 @@ function DreamEditor({ dream, onSaved }) {
       />
       <ImageField id="dream-image" value={v.image} onChange={(image) => setV((s) => ({ ...s, image }))} error={fields.image} />
       <div className="editor__row">
-        <TextField id="dream-target" label="Goal (₹)" inputMode="numeric" value={v.targetAmount} onChange={set('targetAmount')} error={fields.targetAmount} />
+        <TextField id="dream-target" label={t('dreamEditor.goal')} inputMode="numeric" value={v.targetAmount} onChange={set('targetAmount')} error={fields.targetAmount} />
         <TextField
           id="dream-offline"
-          label="Received offline (₹)"
+          label={t('dreamEditor.offline')}
           inputMode="numeric"
           value={v.offlineAmount}
           onChange={set('offlineAmount')}
@@ -197,15 +206,31 @@ function DreamEditor({ dream, onSaved }) {
       </div>
       <label className="toggle">
         <input type="checkbox" checked={v.isActive} onChange={set('isActive')} />
-        <span>Show on the gift page</span>
+        <span>{t('dreamEditor.show')}</span>
       </label>
+      <fieldset className="editor__translation" lang="gu">
+        <legend className="label">{t('editor.gujarati')}</legend>
+        <p className="couple-muted">{t('editor.gujaratiHint')}</p>
+        <TextField id="dream-title-gu" label={t('editor.titleGu')} optional value={v.titleGu} onChange={set('titleGu')} maxLength={120} />
+        <TextField
+          id="dream-description-gu"
+          label={t('editor.descriptionGu')}
+          optional
+          textarea
+          rows={3}
+          maxLength={1000}
+          value={v.descriptionGu}
+          onChange={set('descriptionGu')}
+          error={fields.translations}
+        />
+      </fieldset>
       {error && (
         <p className="form-alert" role="alert">
           {error}
         </p>
       )}
       <button type="submit" className="button" disabled={busy}>
-        {busy ? 'Saving…' : dream ? 'Save changes' : 'Add dream'}
+        {busy ? t('editor.saving') : dream ? t('editor.save') : t('dreamEditor.save')}
       </button>
     </form>
   );

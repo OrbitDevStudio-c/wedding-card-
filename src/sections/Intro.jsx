@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { couple, invitation } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
+import { LanguageSwitcher } from '../i18n/LanguageSwitcher.jsx';
 import { Monogram } from '../components/Monogram.jsx';
+import { RoyalElephant, RoyalPeacock } from '../components/Painted.jsx';
 import { prefersReducedMotion } from '../lib/motion.js';
 import './Intro.css';
 
@@ -42,7 +44,10 @@ function Door({ side }) {
             ))}
           </g>
         </svg>
-        <div className="intro__studs" />
+        {/* Painted onto the door itself, so it swings open with the panel */}
+        <div className="intro__art">
+          {side === 'left' ? <RoyalPeacock className="intro__peacock" eager /> : <RoyalElephant className="intro__elephant" flip eager />}
+        </div>
       </div>
       <div className="intro__seal-half">
         <Seal />
@@ -52,6 +57,8 @@ function Door({ side }) {
 }
 
 export function Intro({ guest, onOpen, onDone }) {
+  const { t, content } = useI18n();
+  const { couple, invitation } = content;
   const [state, setState] = useState('closed');
   const buttonRef = useRef(null);
 
@@ -70,20 +77,22 @@ export function Intro({ guest, onOpen, onDone }) {
     <div className="intro" data-state={state} role="dialog" aria-modal="true" aria-labelledby="intro-title">
       <Door side="left" />
       <Door side="right" />
+      {/* Inside the modal intro so keyboard and screen-reader users can choose before opening */}
+      <LanguageSwitcher className="lang-switch--floating" tone="dark" />
       <div className="intro__content">
         <div className="intro__top">
           {guest && <p className="intro__greeting">{invitation.personalGreeting.replace('{guest}', guest)}</p>}
-          <p className="label intro__eyebrow">You are invited to the wedding of</p>
-          <p id="intro-title" className="script intro__names">
+          <p className="label intro__eyebrow">{t('intro.eyebrow')}</p>
+          <p id="intro-title" className="script latin intro__names" lang="en">
             {couple.bride.name} <span className="intro__amp">&amp;</span> {couple.groom.name}
           </p>
         </div>
-        <button ref={buttonRef} type="button" className="intro__open" onClick={open} aria-label="Break the seal to open the invitation">
+        <button ref={buttonRef} type="button" className="intro__open" onClick={open} aria-label={t('intro.open')}>
           <span className="intro__ring" />
           <span className="intro__ring intro__ring--late" />
         </button>
         <p className="label intro__hint" aria-hidden="true">
-          Tap the seal to open
+          {t('intro.hint')}
         </p>
       </div>
     </div>

@@ -1,10 +1,12 @@
 import { useId } from 'react';
 import { couple } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
 import './Monogram.css';
 
 // "A & R" set inside a jharokha (ogee) arch. The letters carry a slow gold shimmer.
 export function Monogram({ className = '', shimmer = true, label = true, ...svgProps }) {
   const id = useId().replace(/:/g, '');
+  const { t } = useI18n();
   const { left, right } = couple.monogram;
   const letters = (
     <>
@@ -19,7 +21,7 @@ export function Monogram({ className = '', shimmer = true, label = true, ...svgP
       className={`monogram ${shimmer ? 'monogram--shimmer' : ''} ${className}`}
       viewBox="0 0 120 152"
       role={label ? 'img' : undefined}
-      aria-label={label ? `${couple.bride.name} and ${couple.groom.name} monogram` : undefined}
+      aria-label={label ? t('monogram.label', { bride: couple.bride.name, groom: couple.groom.name }) : undefined}
       aria-hidden={label ? undefined : 'true'}
       {...svgProps}
     >

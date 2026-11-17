@@ -18,7 +18,7 @@ const connectionString = env.DATABASE_URL.replace(/sslmode=(require|prefer|verif
 // Neon's pooler (PgBouncer, transaction mode) rejects a search_path startup option and does not
 // keep session SETs between transactions, so table names are schema-qualified in every statement.
 const TABLES = 'weddings|couple_users|gifts|gift_reservations|dreams|dream_contributions|webhook_events';
-const TABLE_RE = new RegExp(String.raw`\b(FROM|JOIN|INTO|UPDATE|EXISTS|REFERENCES|ON)\s+(${TABLES})\b`, 'g');
+const TABLE_RE = new RegExp(String.raw`\b(FROM|JOIN|INTO|UPDATE|EXISTS|REFERENCES|ON|TABLE)\s+(${TABLES})\b`, 'g');
 export const qualify = (sql) => sql.replace(TABLE_RE, `$1 ${SCHEMA}.$2`);
 
 export const pool = new pg.Pool({
@@ -179,6 +179,10 @@ CREATE TABLE IF NOT EXISTS dream_contributions (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS contributions_wedding ON dream_contributions(wedding_id, payment_status);
+
+-- Optional translated text for guests who switch language: {"gu": {"name": "...", "description": "..."}}
+ALTER TABLE gifts ADD COLUMN IF NOT EXISTS translations jsonb NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE dreams ADD COLUMN IF NOT EXISTS translations jsonb NOT NULL DEFAULT '{}'::jsonb;
 
 -- Webhook event ids already processed: a retried delivery is acknowledged, never re-applied.
 CREATE TABLE IF NOT EXISTS webhook_events (

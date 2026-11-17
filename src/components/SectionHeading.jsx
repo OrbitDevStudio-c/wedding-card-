@@ -1,5 +1,5 @@
 import { withAmp } from './Amp.jsx';
-import { Ornament } from './Ornament.jsx';
+import { LotusDivider } from './Painted.jsx';
 import { Reveal } from './Reveal.jsx';
 import './SectionHeading.css';
 
@@ -10,7 +10,7 @@ export function SectionHeading({ id, eyebrow, title, children }) {
       <h2 id={id} className="script section-heading__title">
         {withAmp(title)}
       </h2>
-      <Ornament className="section-heading__ornament" />
+      <LotusDivider className="section-heading__ornament" />
       {children && <p className="lede section-heading__lede">{children}</p>}
     </Reveal>
   );

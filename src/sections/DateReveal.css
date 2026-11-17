@@ -78,3 +78,24 @@
   color: var(--gold-200);
   animation: fade-up 900ms var(--ease-out) both;
 }
+
+.date-card {
+  position: relative;
+}
+
+.date-card__corner {
+  position: absolute;
+  bottom: -14px;
+  z-index: 2;
+  width: clamp(3.5rem, 14vw, 5rem);
+  pointer-events: none;
+}
+
+.date-card__corner--left {
+  left: -26px;
+}
+
+.date-card__corner--right {
+  right: -26px;
+  transform: scaleX(-1);
+}

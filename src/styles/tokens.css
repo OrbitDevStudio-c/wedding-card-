@@ -30,6 +30,22 @@
   font-display: swap;
 }
 
+/* Gujarati: used only for Gujarati characters (unicode-range), so English pages never download it */
+@font-face {
+  font-family: 'Noto Serif Gujarati';
+  src: url('/fonts/noto-serif-gujarati-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0951-0952, U+0964-0965, U+0A80-0AFF, U+200C-200D, U+25CC, U+A830-A839;
+}
+@font-face {
+  font-family: 'Noto Serif Gujarati';
+  src: url('/fonts/noto-serif-gujarati-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+  unicode-range: U+0951-0952, U+0964-0965, U+0A80-0AFF, U+200C-200D, U+25CC, U+A830-A839;
+}
+
 :root {
   /* Palette: palace emerald, ivory parchment, antique gold */
   --emerald-950: #061b18;
@@ -51,9 +67,29 @@
   --rose: #c46f6a;
   --error: #a3352b;
 
-  --font-script: 'Pinyon Script', 'Snell Roundhand', 'Apple Chancery', cursive;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-label: 'Cinzel', Georgia, serif;
+  /* Royal heritage accents */
+  --royal-emerald: #123d32;
+  --peacock: #075b50;
+  --peacock-blue: #1f5f7a;
+  --antique-gold: #c5a15b;
+  --warm-ivory: #f8f3e8;
+  --burgundy: #702d46;
+  --palace-cream: #efe3cc;
+  --heritage-brown: #49352c;
+  --peacock-blue: #087e8b;
+  --peacock-deep: #0b4f6c;
+  --turquoise: #1d9a91;
+  --maroon: #711f35;
+  --saffron: #d98235;
+  --vermilion: #c94b36;
+  --lotus-pink: #d98ba3;
+  --leaf-green: #657c45;
+
+  /* Latin fonts first; Gujarati characters fall through to Noto Serif Gujarati glyph by glyph */
+  --font-gujarati: 'Noto Serif Gujarati';
+  --font-script: 'Pinyon Script', var(--font-gujarati), 'Snell Roundhand', 'Apple Chancery', cursive;
+  --font-serif: 'Cormorant Garamond', var(--font-gujarati), Georgia, serif;
+  --font-label: 'Cinzel', var(--font-gujarati), Georgia, serif;
 
   /* 8px spacing scale */
   --space-half: 0.25rem;

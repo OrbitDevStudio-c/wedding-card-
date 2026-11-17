@@ -37,5 +37,10 @@ export async function api(path, { method = 'GET', body, formData, signal } = {})
 export const formatINR = (n) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n || 0);
 
-export const formatDate = (d) =>
-  d ? new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(d)) : '';
+// Dates follow the chosen language; digits stay Western (latn) so they read the same everywhere.
+export const formatDate = (d, locale = 'en-IN') =>
+  d
+    ? new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', numberingSystem: 'latn' }).format(
+        new Date(d),
+      )
+    : '';

@@ -1,0 +1,111 @@
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 3px 3px 10px;
+  border: 1px solid rgb(197 161 91 / 0.55);
+  border-radius: 999px;
+  background: rgb(253 250 243 / 0.92);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(6px);
+}
+
+.lang-switch--dark {
+  background: rgb(6 27 24 / 0.55);
+  border-color: rgb(226 201 149 / 0.45);
+  box-shadow: none;
+}
+
+.lang-switch__globe {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  fill: none;
+  stroke: var(--gold-700);
+  stroke-width: 1.4;
+}
+
+.lang-switch--dark .lang-switch__globe {
+  stroke: var(--gold-300);
+}
+
+.lang-switch__option {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--emerald-800);
+  font-family: var(--font-label);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  transition: background-color var(--duration-fast), color var(--duration-fast);
+}
+
+.lang-switch__option:lang(gu) {
+  font-family: var(--font-gujarati), serif;
+  font-size: 0.9375rem;
+  letter-spacing: 0;
+}
+
+.lang-switch__option:hover {
+  background: rgb(15 59 53 / 0.08);
+}
+
+.lang-switch__option[aria-pressed='true'] {
+  background: var(--emerald-800);
+  color: var(--ivory-50);
+}
+
+.lang-switch--dark .lang-switch__option {
+  color: var(--gold-200);
+}
+
+.lang-switch--dark .lang-switch__option:hover {
+  background: rgb(226 201 149 / 0.12);
+}
+
+.lang-switch--dark .lang-switch__option[aria-pressed='true'] {
+  background: var(--gold-300);
+  color: var(--emerald-950);
+}
+
+/* On the invitation it floats top-right, above the intro doors, so guests can choose first */
+.lang-switch--floating {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  right: max(10px, env(safe-area-inset-right));
+  z-index: 60;
+}
+
+@media (max-width: 380px) {
+  .lang-switch {
+    padding-left: 6px;
+  }
+
+  .lang-switch__globe {
+    display: none;
+  }
+
+  .lang-switch__option {
+    min-width: 40px;
+    padding: 0 9px;
+  }
+}
+
+/* Inside the intro it must sit above the carved doors */
+.intro .lang-switch--floating {
+  z-index: 10;
+}
+
+.lang-switch--floating {
+  transition: transform 300ms var(--ease-out), opacity 300ms var(--ease-out);
+}
+
+.lang-switch--floating.is-tucked:not(:focus-within) {
+  opacity: 0;
+  transform: translateY(calc(-100% - 16px));
+  pointer-events: none;
+}

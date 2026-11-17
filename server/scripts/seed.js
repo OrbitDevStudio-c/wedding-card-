@@ -26,18 +26,18 @@ export async function seedWedding({ slug, coupleNames, weddingDate, email, passw
   if (samples && !(await one('SELECT 1 FROM gifts WHERE wedding_id = $1 LIMIT 1', [wedding.id]))) {
     for (const [i, g] of sampleGifts.entries()) {
       await query(
-        `INSERT INTO gifts (wedding_id, name, description, image, estimated_price, purchase_url, category, display_order)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [wedding.id, g.name, g.description, g.image, g.estimatedPrice, g.purchaseUrl, g.category, i],
+        `INSERT INTO gifts (wedding_id, name, description, image, estimated_price, purchase_url, category, translations, display_order)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [wedding.id, g.name, g.description, g.image, g.estimatedPrice, g.purchaseUrl, g.category, g.translations || {}, i],
       );
     }
   }
   if (samples && !(await one('SELECT 1 FROM dreams WHERE wedding_id = $1 LIMIT 1', [wedding.id]))) {
     for (const [i, d] of sampleDreams.entries()) {
       await query(
-        `INSERT INTO dreams (wedding_id, slug, title, description, image, target_amount, offline_amount, display_order)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [wedding.id, d.slug, d.title, d.description, d.image, d.targetAmount, d.offlineAmount, i],
+        `INSERT INTO dreams (wedding_id, slug, title, description, image, target_amount, offline_amount, translations, display_order)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [wedding.id, d.slug, d.title, d.description, d.image, d.targetAmount, d.offlineAmount, d.translations || {}, i],
       );
     }
   }

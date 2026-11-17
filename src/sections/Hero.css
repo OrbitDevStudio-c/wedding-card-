@@ -276,3 +276,54 @@
     animation: none;
   }
 }
+
+/* Royal elephants flanking the arch on wide screens */
+.hero__guards {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .hero__guards {
+    position: absolute;
+    inset: auto 0 16vh;
+    display: flex;
+    justify-content: space-between;
+    /* Clear of the floating music / share buttons on the right */
+    padding-inline: max(5.5rem, calc(50% - 44rem));
+    pointer-events: none;
+  }
+
+  .hero__elephant {
+    width: clamp(12rem, 17vw, 17rem);
+    opacity: 0;
+    animation: guard-in 1600ms var(--ease-out) 900ms forwards;
+  }
+
+  .site:not(.is-open) .hero__elephant {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes guard-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 0.95;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__elephant {
+    opacity: 0.95;
+  }
+}
+
+/* Phones, where the names stack: Pinyon's long swashes need a little room around the ampersand */
+@media (max-width: 419px) {
+  .hero__amp {
+    margin-block: 0.2em;
+  }
+}

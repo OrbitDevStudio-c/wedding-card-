@@ -30,6 +30,7 @@ export const publicGift = (g) => ({
   estimatedPrice: g.estimated_price,
   purchaseUrl: g.purchase_url,
   category: g.category,
+  translations: g.translations || {},
 });
 
 const progress = (raised, target) => Math.min(100, Math.round((raised / target) * 1000) / 10);
@@ -45,6 +46,7 @@ export function publicDream(d, totals) {
     targetAmount: d.target_amount,
     raisedAmount: raised,
     progress: progress(raised, d.target_amount),
+    translations: d.translations || {},
   };
 }
 

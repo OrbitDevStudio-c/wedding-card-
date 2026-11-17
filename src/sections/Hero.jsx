@@ -1,12 +1,15 @@
 import { useEffect, useRef } from 'react';
-import { couple, dates, invitation, venue } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
 import { Monogram } from '../components/Monogram.jsx';
 import { Mandala, Toran } from '../components/Motifs.jsx';
+import { RoyalElephant } from '../components/Painted.jsx';
 import { prefersReducedMotion } from '../lib/motion.js';
 import './Hero.css';
 
 export function Hero({ guest }) {
   const ref = useRef(null);
+  const { t, content } = useI18n();
+  const { couple, dates, invitation, venue } = content;
 
   // Soft parallax: one CSS variable drives the decorative layers.
   useEffect(() => {
@@ -37,6 +40,10 @@ export function Hero({ guest }) {
         </div>
       </div>
       <Toran className="hero__toran" />
+      <div className="hero__guards" aria-hidden="true">
+        <RoyalElephant className="hero__elephant hero__elephant--left" />
+        <RoyalElephant className="hero__elephant hero__elephant--right" flip />
+      </div>
 
       <div className="hero__arch">
         <div className="hero__inner">
@@ -52,7 +59,7 @@ export function Hero({ guest }) {
           <p className="hero__line hero__item" style={{ '--i': 3 }}>
             {invitation.line}
           </p>
-          <h1 id="hero-title" className="script hero__names hero__item" style={{ '--i': 4 }}>
+          <h1 id="hero-title" className="script latin hero__names hero__item" style={{ '--i': 4 }} lang="en">
             <span className="hero__name">{couple.bride.name}</span>
             <span className="hero__amp">&amp;</span>
             <span className="hero__name">{couple.groom.name}</span>
@@ -77,7 +84,7 @@ export function Hero({ guest }) {
       </div>
 
       <a className="hero__scroll hero__item" style={{ '--i': 7 }} href="#story">
-        <span className="label">Our story</span>
+        <span className="label">{t('hero.scroll')}</span>
         <span className="hero__scroll-line" aria-hidden="true" />
       </a>
     </section>

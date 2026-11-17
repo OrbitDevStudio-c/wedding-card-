@@ -3,6 +3,7 @@ import { gifts, music as musicConfig } from './config.js';
 import { FloatingControls } from './components/FloatingControls.jsx';
 import { PetalLayer } from './components/PetalLayer.jsx';
 import { useGuestName } from './hooks/useGuestName.js';
+import { LanguageSwitcher } from './i18n/LanguageSwitcher.jsx';
 import { useMusic } from './hooks/useMusic.js';
 import { Blessings } from './sections/Blessings.jsx';
 import { Countdown } from './sections/Countdown.jsx';
@@ -72,6 +73,7 @@ export default function App() {
   return (
     <>
       {!introDone && <Intro guest={guest} onOpen={handleOpen} onDone={handleDone} />}
+      {introDone && <LanguageSwitcher className="lang-switch--floating" tuck />}
 
       <div className={`site ${opened ? 'is-open' : ''}`} inert={introDone ? undefined : ''}>
         <main id="main">

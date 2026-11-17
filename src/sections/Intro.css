@@ -273,3 +273,73 @@
     display: none;
   }
 }
+
+/* Painted door art: peacock (left) and elephant (right), in the lower part of each panel, clear of
+   the names, seal and hint in the centre. It belongs to the panel, so it swings with the door. */
+.intro__art {
+  position: absolute;
+  inset: auto 6% 5% 6%;
+  display: grid;
+  place-items: end center;
+  pointer-events: none;
+}
+
+.intro__art::before {
+  /* a soft painted ground so the art sits on the door rather than floating on it */
+  content: '';
+  position: absolute;
+  inset: auto 4% -2% 4%;
+  height: 22%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(226 201 149 / 0.16), transparent);
+}
+
+.intro__peacock,
+.intro__elephant {
+  position: relative;
+  width: min(100%, 340px);
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.35));
+}
+
+/* Keep the art below the seal: limit its height to the lower ~38% of the screen */
+.intro__peacock {
+  max-height: 34vh;
+}
+
+.intro__elephant {
+  max-height: 36vh;
+  transform: scale(1.2);
+  transform-origin: center bottom;
+}
+
+/* Phones: smaller, and lower, so the seal stays the focus */
+@media (max-width: 600px) {
+  .intro__art {
+    inset: auto 2% 3% 2%;
+  }
+
+  .intro__peacock,
+  .intro__elephant {
+    max-height: 22vh;
+  }
+}
+
+@media (max-height: 560px) {
+  .intro__art {
+    display: none;
+  }
+}
+
+/* Wide screens: the peacock shows at its full (crisp) size and the elephant is matched to its
+   visual weight, both staying well below the names and clear of the seal. */
+@media (min-width: 1024px) and (min-height: 700px) {
+  .intro__peacock {
+    width: 309px;
+    max-height: 34vh;
+  }
+
+  .intro__elephant {
+    width: min(100%, 330px);
+    max-height: 36vh;
+  }
+}

@@ -32,3 +32,10 @@
 .footer__credit a:focus-visible {
   text-decoration-color: currentColor;
 }
+
+.footer__chhatris {
+  width: min(18rem, 80vw);
+  margin-bottom: var(--space-1);
+  opacity: 0.8;
+}
+

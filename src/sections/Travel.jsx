@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { travel, venue } from '../config.js';
+import { useI18n } from '../i18n/index.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { Reveal } from '../components/Reveal.jsx';
 import { SectionHeading } from '../components/SectionHeading.jsx';
@@ -28,15 +28,17 @@ function FaqItem({ q, a }) {
 }
 
 export function Travel() {
+  const { t, content } = useI18n();
+  const { travel, venue } = content;
   const city = venue.city.split(',')[0];
   return (
     <section className="section tone-ivory travel" id="travel" aria-labelledby="travel-title">
       <div className="container">
-        <SectionHeading id="travel-title" eyebrow={`Getting to ${city}`} title="Travel & Stay" />
+        <SectionHeading id="travel-title" eyebrow={t('travel.eyebrow', { city })} title={t('travel.title')} />
 
         <ul className="travel__modes">
           {travel.modes.map((mode, i) => (
-            <Reveal as="li" key={mode.title} className="travel__mode" delay={i * 120}>
+            <Reveal as="li" key={mode.icon} className="travel__mode" delay={i * 120}>
               <span className="travel__mode-icon" aria-hidden="true">
                 <Icon name={mode.icon} />
               </span>
@@ -53,7 +55,7 @@ export function Travel() {
 
         <div className="travel__columns">
           <Reveal className="travel__block">
-            <h3 className="travel__block-title">Where to stay</h3>
+            <h3 className="travel__block-title">{t('travel.stay')}</h3>
             <ul className="hotels">
               {travel.hotels.map((hotel) => (
                 <li key={hotel.name} className="hotel">
@@ -66,7 +68,7 @@ export function Travel() {
                     href={mapsSearch(`${hotel.name}, ${venue.city}`)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${hotel.name} on Google Maps, ${hotel.distance} from the venue`}
+                    aria-label={t('travel.hotelMap', { hotel: hotel.name, distance: hotel.distance })}
                   >
                     <Icon name="pin" />
                     <span className="label">{hotel.distance}</span>
@@ -77,10 +79,10 @@ export function Travel() {
           </Reveal>
 
           <Reveal className="travel__block" delay={150}>
-            <h3 className="travel__block-title">Good to know</h3>
+            <h3 className="travel__block-title">{t('travel.faq')}</h3>
             <ul className="faq">
-              {travel.faq.map((item) => (
-                <FaqItem key={item.q} {...item} />
+              {travel.faq.map((item, i) => (
+                <FaqItem key={i} {...item} />
               ))}
             </ul>
           </Reveal>
