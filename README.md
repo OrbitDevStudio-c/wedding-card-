@@ -135,11 +135,10 @@ All ids are UUIDs, and every couple query is scoped by the signed-in user's `wed
 
 ```bash
 npm install
-npm run server:install                 # installs server/ dependencies
 # .env (project root) must contain NEON_DB=postgresql://... (or set DATABASE_URL)
 COUPLE_EMAIL=you@example.com COUPLE_PASSWORD='a long passphrase' npm run seed
-npm run server                         # API on http://localhost:4000 (tables are created on start)
-npm run dev                            # site on http://localhost:5173, with /api proxied to the API
+npm run dev                            # API on :4000 + site on http://localhost:5173 (/api proxied)
+npm run dev:web                        # the site alone, without the API
 ```
 
 `npm run seed` creates the wedding `alica-rushil` with the sample wishlist and three dreams, plus the couple
@@ -463,8 +462,19 @@ which WhatsApp requires. It is also the domain inside every QR code.
 
 ### Deploying the gifts API
 
-The site stays static; the API is a long-running Node service. Any Node host works (Render, Railway,
-Fly.io, a VPS). On the API host:
+**Vercel (default):** the API ships with the site. [`api/index.js`](api/index.js) wraps the Express app as a
+serverless function and `vercel.json` rewrites every `/api/*` request to it. In the Vercel project →
+Settings → Environment Variables, set:
+
+- `NEON_DB` (or `DATABASE_URL`): the Neon pooled connection string
+- `JWT_SECRET`: at least 32 random characters (`node -e "console.log(crypto.randomBytes(48).toString('base64url'))"`)
+- `RAZORPAY_*` when you are ready to take payments
+
+Then redeploy. Without `JWT_SECRET` or the database URL, `/api` answers 503 and `/gifts` shows the
+"could not reach" message. Vercel's disk is temporary, so images uploaded from the dashboard do not last;
+use images under `public/gifts/` or https image URLs, or host the API elsewhere as below.
+
+**Any other Node host** (Render, Railway, Fly.io, a VPS) runs the API as a long-running service. On the API host:
 
 1. Use `server/` as the root directory, build with `npm ci`, start with `npm start` (Node 18.18+).
 2. Set `NODE_ENV=production`, `DATABASE_URL` (the Neon pooled connection string) and `JWT_SECRET`, plus the
@@ -475,7 +485,7 @@ Fly.io, a VPS). On the API host:
 
 Then point the site's `/api` at it, so the browser sees one origin:
 
-- **Vercel:** add this rule **above** the existing one in `vercel.json`:
+- **Vercel:** change the `/api/:path*` rule in `vercel.json` to proxy instead:
   `{ "source": "/api/:path*", "destination": "https://YOUR-API-HOST/api/:path*" }`
 - **Netlify:** add `/api/*  https://YOUR-API-HOST/api/:splat  200` as the **first** line of `public/_redirects`.
 

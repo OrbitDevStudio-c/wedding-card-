@@ -6,6 +6,9 @@ const list = (v) => (v || '').split(',').map((s) => s.trim()).filter(Boolean);
 const int = (v, d) => (Number.isFinite(Number.parseInt(v, 10)) ? Number.parseInt(v, 10) : d);
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
+// On Vercel each serverless instance serves one request at a time and the disk is read-only
+// apart from /tmp, so keep the pool small and write uploads to /tmp (not persistent there).
+const onVercel = Boolean(process.env.VERCEL);
 const serverRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 export const env = {
@@ -17,15 +20,15 @@ export const env = {
   DATABASE_URL: process.env.DATABASE_URL || process.env.NEON_DB || '',
   // Postgres schema holding the tables; tests use their own so they never touch real data.
   DB_SCHEMA: process.env.DB_SCHEMA || 'wedding_gifts',
-  DB_POOL_MAX: int(process.env.DB_POOL_MAX, 10),
-  DB_POOL_MIN: int(process.env.DB_POOL_MIN, 4),
+  DB_POOL_MAX: int(process.env.DB_POOL_MAX, onVercel ? 3 : 10),
+  DB_POOL_MIN: int(process.env.DB_POOL_MIN, onVercel ? 1 : 4),
   JWT_SECRET: process.env.JWT_SECRET || '',
   SESSION_HOURS: int(process.env.SESSION_HOURS, 12),
   // Origins allowed to call the API cross-origin. Same-origin calls (through the /api proxy) need none.
   CORS_ORIGINS: list(process.env.CORS_ORIGINS),
   // Public site URL, used to build QR and share links.
   PUBLIC_SITE_URL: (process.env.PUBLIC_SITE_URL || '').replace(/\/$/, ''),
-  UPLOAD_DIR: path.resolve(serverRoot, process.env.UPLOAD_DIR || 'uploads'),
+  UPLOAD_DIR: path.resolve(serverRoot, process.env.UPLOAD_DIR || (onVercel ? '/tmp/wedding-uploads' : 'uploads')),
   TRUST_PROXY: int(process.env.TRUST_PROXY, 1),
   // Rate limits: requests per IP per 15 minutes.
   RATE_RESERVE: int(process.env.RATE_RESERVE, 10),

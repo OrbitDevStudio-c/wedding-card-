@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev.mjs",
     "build": "vite build",
     "preview": "vite preview --port 4173 --strictPort",
     "images": "node scripts/build-images.mjs",
@@ -18,12 +18,22 @@
     "server:install": "npm --prefix server install",
     "seed": "npm --prefix server run seed",
     "gift-art": "node scripts/make-gift-art.mjs",
-    "test:gifts": "playwright test tests/gifts"
+    "test:gifts": "playwright test tests/gifts",
+    "dev:web": "vite"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.3.0",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.5.0",
+    "pg": "^8.23.1",
     "qrcode": "1.5",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
@@ -36,7 +46,6 @@
     "@vitejs/plugin-react": "^4.3.4",
     "chrome-launcher": "^1.1.2",
     "lighthouse": "^12.3.0",
-    "sharp": "^0.33.5",
     "vite": "^5.4.11"
   }
 }
